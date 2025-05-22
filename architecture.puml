@@ -1,0 +1,69 @@
+@startuml Architecture
+
+class Pessoa {
+  + nome: str
+  + cpf: str
+  + data_nascimento: str
+  + email: str
+  + senha_login: str
+  + carteira: Carteira
+}
+
+class Carteira {
+  + saldo: float 
+  + senha_transacao: str
+  + lista_de_acoes: List[Acao]
+  + historico_de_negociacoes: List[Boleta] 
+}
+
+class Corretora {
+  + acoes_disponiveis: List[Acao]
+  + fazer_transacao(carteira: Carteira, valor: float): bool 
+  + negociar_acao(carteira: Carteira, acao: Acao, quantidade: int): bool
+}
+
+class Boleta {
+  + ticker: str
+  + quantidade: int
+  + preco_medio: float 
+  + tipo: str
+}
+
+class Acao {
+  + ticker: str
+  + nome_empresa: str
+  + preco_atual: float
+  + historico_precos: DataFrame
+  + atualizar(): bool
+}
+
+class Downloader {
+  + download_ticker(ticker: str): DataFrame
+  + atualizar_historico(ticker: str): bool
+}
+
+class Database {
+  + carregar_usuario(cpf: str): Pessoa
+  + salvar_usuario(pessoa: Pessoa): bool
+  + carregar_acao(ticker: str): Acao
+  + salvar_historico(acao: Acao): bool
+}
+
+class Interface {
+
+}
+
+class Frame {
+}
+
+Pessoa *- Carteira
+Carteira *-- Boleta
+Carteira o-- Acao
+Corretora o-- Acao
+Corretora ..> Carteira
+Downloader ..> Acao
+Database ..> Pessoa
+Database ..> Acao
+Frame -|> Interface
+
+@enduml
