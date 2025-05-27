@@ -1,8 +1,12 @@
-from Log import Log
+# Project
+from Log import log
+from Database import db
 
 def main() -> None:
-    print("Hello World")
+    log.message("Aplicativo iniciado.", "INFO")
+    db.start()
+    
+    db.close()
 
 if __name__ == "__main__":
-    Log().message("ola")
     main()
