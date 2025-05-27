@@ -11,11 +11,15 @@ source venv/bin/activate
 Para poder rodar o projeto, digite:
 
 ```
-python3 src/main.py
+./start.sh
+-- caso de problemas de permissão, digite chmod 777 start.sh
 ```
+
 
 Para sair do ambiente virtual, digite:
 
 ```
 deactivate
 ```
+
+
