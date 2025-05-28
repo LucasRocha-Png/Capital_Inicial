@@ -1,5 +1,6 @@
 # Project
 from Log import log
+from Pessoa import Pessoa
 
 # Third Party
 import sqlite3
@@ -89,4 +90,34 @@ class Database:
             for table in created_tables:
                 log.message(f"Tabela '{table}' criada.", "INFO")
     
+    def salvar_usuario(self, pessoa: Pessoa) -> bool:
+        try:
+            query = """
+                INSERT INTO PESSOA (NOME, CPF, DATA_NASCIMENTO, EMAIL, SENHA)
+                VALUES (?, ?, ?, ?, ?);
+            """
+            self.conn.execute(query, (pessoa.nome, pessoa.cpf, pessoa.data_nascimento, pessoa.email, pessoa.senha_login))
+            self.conn.commit()
+            log.message(f"Usuário '{pessoa.nome}' salvo com sucesso.", "INFO")
+            return True
+        except sqlite3.IntegrityError as e:
+            log.message(f"Erro ao salvar usuário: {e}", "ERROR")
+            return False
+
+    def carregar_usuario(self, cpf: str) -> Pessoa:
+        quary = """
+            SELECT * FROM PESSOA WHERE cpf = ?
+        """
+        cursor = self.conn.execute(quary, (cpf,))
+        row = cursor.fetchone()
+        if row:
+            return Pessoa(
+                nome=row[1],
+                cpf=row[2],
+                data_nascimento=row[3],
+                email=row[4],
+                senha_login=row[5]
+            )
+        return None
+
 db = Database()
