@@ -1,6 +1,5 @@
 # Project
 from Log import log
-from Pessoa import Pessoa
 
 # Third Party
 import sqlite3
@@ -40,7 +39,7 @@ class Database:
         # Pega as tabelas já existentes
         tables_before = set(self.table_exists())
 
-        # Tabela de ações ------------------------
+        # ACAO ------------------------
         query = """
             CREATE TABLE IF NOT EXISTS ACAO (
                 TICKER TEXT PRIMARY KEY,
@@ -50,12 +49,12 @@ class Database:
         self.conn.execute(query)
         # ---------------------------------------   
 
-        # Tabela de pessoas ---------------------
+        # PESSOA ---------------------
         query = """
             CREATE TABLE IF NOT EXISTS PESSOA (
                 PESSOA_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                NOME TEXT NOT NULL,
                 CPF TEXT UNIQUE NOT NULL,
+                NOME TEXT NOT NULL,
                 DATA_NASCIMENTO TEXT NOT NULL,
                 EMAIL TEXT UNIQUE NOT NULL,
                 SENHA TEXT NOT NULL
@@ -64,17 +63,30 @@ class Database:
         self.conn.execute(query)
         # -----------------------------------------
 
-        # Tabela de Boletas associada à Pessoa ---------------------
+        # CARTEIRA  ---------------------
+        query = """
+            CREATE TABLE IF NOT EXISTS CARTEIRA (
+                CARTEIRA_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                CPF TEXT NOT NULL,
+                SALDO REAL NOT NULL,
+                SENHA_TRANSACAO TEXT NOT NULL,
+                FOREIGN KEY (CPF) REFERENCES PESSOA(CPF)
+            );
+        """
+        self.conn.execute(query)
+        # -----------------------------------------
+
+        # BOLETA ----
         query = """
             CREATE TABLE IF NOT EXISTS BOLETA (
                 BOLETA_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                PESSOA_ID INTEGER NOT NULL,
+                CPF TEXT NOT NULL,
                 DATA TEXT NOT NULL,
                 TICKER TEXT NOT NULL,
                 QUANTIDADE INTEGER NOT NULL,
                 PRECO_MEDIO REAL NOT NULL,
                 TIPO TEXT NOT NULL,
-                FOREIGN KEY (PESSOA_ID) REFERENCES PESSOA(PESSOA_ID),
+                FOREIGN KEY (CPF) REFERENCES CARTEIRA(CPF),
                 FOREIGN KEY (TICKER) REFERENCES ACAO(TICKER)
             );
         """
@@ -90,34 +102,22 @@ class Database:
             for table in created_tables:
                 log.message(f"Tabela '{table}' criada.", "INFO")
     
-    def salvar_usuario(self, pessoa: Pessoa) -> bool:
+    def execute(self, query: str, params: tuple = ()) -> None:
         try:
-            query = """
-                INSERT INTO PESSOA (NOME, CPF, DATA_NASCIMENTO, EMAIL, SENHA)
-                VALUES (?, ?, ?, ?, ?);
-            """
-            self.conn.execute(query, (pessoa.nome, pessoa.cpf, pessoa.data_nascimento, pessoa.email, pessoa.senha_login))
+            self.conn.execute(query, params)
             self.conn.commit()
-            log.message(f"Usuário '{pessoa.nome}' salvo com sucesso.", "INFO")
             return True
-        except sqlite3.IntegrityError as e:
-            log.message(f"Erro ao salvar usuário: {e}", "ERROR")
-            return False
 
-    def carregar_usuario(self, cpf: str) -> Pessoa:
-        quary = """
-            SELECT * FROM PESSOA WHERE cpf = ?
-        """
-        cursor = self.conn.execute(quary, (cpf,))
-        row = cursor.fetchone()
-        if row:
-            return Pessoa(
-                nome=row[1],
-                cpf=row[2],
-                data_nascimento=row[3],
-                email=row[4],
-                senha_login=row[5]
-            )
-        return None
+        except sqlite3.Error as e:
+            log.message(f"Erro ao executar query: {e}", "ERROR")
+            return False   
+
+    def fetchone(self, query: str, params: tuple = ()) -> tuple:
+        try:
+            cursor = self.conn.execute(query, params)
+            return cursor.fetchone()
+        except sqlite3.Error as e:
+            log.message(f"Erro ao buscar dados: {e}", "ERROR")
+            return None
 
 db = Database()
