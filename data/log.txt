@@ -1,29 +1,11 @@
-[2025-05-28 00:00:47] [INFO] - Log iniciado.
-[2025-05-28 00:00:47] [INFO] - Aplicativo iniciado.
-[2025-05-28 00:00:47] [INFO] - Database iniciado.
-[2025-05-28 00:00:47] [INFO] - Tabela 'PESSOA' criada.
-[2025-05-28 00:00:47] [INFO] - Tabela 'ACAO' criada.
-[2025-05-28 00:00:47] [INFO] - Tabela 'CARTEIRA' criada.
-[2025-05-28 00:00:47] [INFO] - Tabela 'sqlite_sequence' criada.
-[2025-05-28 00:00:47] [INFO] - Tabela 'BOLETA' criada.
-[2025-05-28 00:00:47] [INFO] - Usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:00:48] [INFO] - Carteira do usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:00:48] [INFO] - Database fechada.
-[2025-05-28 00:02:14] [INFO] - Log iniciado.
-[2025-05-28 00:02:14] [INFO] - Aplicativo iniciado.
-[2025-05-28 00:02:14] [INFO] - Database iniciado.
-[2025-05-28 00:02:14] [INFO] - Usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:02:14] [INFO] - Carteira do usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:02:14] [INFO] - Database fechada.
-[2025-05-28 00:02:30] [INFO] - Log iniciado.
-[2025-05-28 00:02:30] [INFO] - Aplicativo iniciado.
-[2025-05-28 00:02:30] [INFO] - Database iniciado.
-[2025-05-28 00:02:31] [INFO] - Usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:02:31] [INFO] - Carteira do usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:02:31] [INFO] - Database fechada.
-[2025-05-28 00:02:37] [INFO] - Log iniciado.
-[2025-05-28 00:02:37] [INFO] - Aplicativo iniciado.
-[2025-05-28 00:02:37] [INFO] - Database iniciado.
-[2025-05-28 00:02:37] [INFO] - Usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:02:37] [INFO] - Carteira do usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 00:02:37] [INFO] - Database fechada.
+[2025-05-28 16:39:54] [INFO] - Log iniciado.
+[2025-05-28 16:39:54] [INFO] - Aplicativo iniciado.
+[2025-05-28 16:39:54] [INFO] - Database iniciado.
+[2025-05-28 16:39:54] [INFO] - Tabela 'CARTEIRA' criada.
+[2025-05-28 16:39:54] [INFO] - Tabela 'ACAO' criada.
+[2025-05-28 16:39:54] [INFO] - Tabela 'sqlite_sequence' criada.
+[2025-05-28 16:39:54] [INFO] - Tabela 'BOLETA' criada.
+[2025-05-28 16:39:54] [INFO] - Tabela 'PESSOA' criada.
+[2025-05-28 16:39:54] [INFO] - Usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
+[2025-05-28 16:39:55] [INFO] - Carteira do usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
+[2025-05-28 16:39:55] [INFO] - Database fechada.

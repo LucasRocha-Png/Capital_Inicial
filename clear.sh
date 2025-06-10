@@ -1,3 +1,0 @@
-# LIMPA A PASTA DATA, MUITO CUIDADO AO USAR
-
-rm -rf data
