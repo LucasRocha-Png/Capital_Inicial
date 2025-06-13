@@ -1,4 +1,4 @@
-@startuml Architecture
+@startuml
 
 abstract Usuario {
   + nome: str
@@ -64,11 +64,53 @@ class Database {
   + salvar_historico(acao: Acao): bool
 }
 
-class Interface {
-
+class Aplicativo {
+  - usuario_atual: Usuario
+  - ultimo_frame: Frame
+  - frames: dict[str, Frame]
+  + inicializar(): None
+  + encerrar(): None
+  + exibir_frame(nome: str): None
 }
 
-class Frame {
+abstract Frame {
+  + evento_exibido(): None
+}
+
+class TelaLogin {
+  + evento_login(): None
+  + evento_tela_cadastro(): None
+}
+
+class TelaCadastro {
+  + evento_cadastro(): None
+  + evento_tela_login(): None
+}
+
+class TelaDashboard {
+  + evento_sair(): None
+  + evento_tela_acoes_disponiveis(): None
+  + evento_tela_acoes_possuidas(): None
+  + evento_tela_historico(): None
+}
+
+class TelaAcoesDisponiveis {
+  + evento_voltar(): None
+  + evento_selecionar_acao(): None
+}
+
+class TelaAcoesPossuidas {
+  + evento_voltar(): None
+  + evento_selecionar_acao(): None
+}
+
+class TelaHistorico {
+  + evento_voltar(): None
+}
+
+class TelaAcao {
+  + evento_voltar(): None
+  + evento_atualizar(): None
 }
 
 Usuario *- Carteira
@@ -82,6 +124,13 @@ Corretora ..> Carteira
 Downloader ..> Acao
 Database ..> Pessoa
 Database ..> Acao
-Frame -|> Interface
+Aplicativo *-- Frame
+
+Frame <|- TelaLogin
+Frame <|- TelaCadastro
+Frame <|- TelaDashboard
+Frame <|- TelaAcoesDisponiveis
+Frame <|- TelaAcoesPossuidas
+Frame <|- TelaHistorico
 
 @enduml
