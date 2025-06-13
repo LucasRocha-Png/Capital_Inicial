@@ -1,11 +1,1 @@
-[2025-05-28 16:39:54] [INFO] - Log iniciado.
-[2025-05-28 16:39:54] [INFO] - Aplicativo iniciado.
-[2025-05-28 16:39:54] [INFO] - Database iniciado.
-[2025-05-28 16:39:54] [INFO] - Tabela 'CARTEIRA' criada.
-[2025-05-28 16:39:54] [INFO] - Tabela 'ACAO' criada.
-[2025-05-28 16:39:54] [INFO] - Tabela 'sqlite_sequence' criada.
-[2025-05-28 16:39:54] [INFO] - Tabela 'BOLETA' criada.
-[2025-05-28 16:39:54] [INFO] - Tabela 'PESSOA' criada.
-[2025-05-28 16:39:54] [INFO] - Usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 16:39:55] [INFO] - Carteira do usuário 'Lucas' - '123.456.789-00' salvo com sucesso.
-[2025-05-28 16:39:55] [INFO] - Database fechada.
+[2025-06-12 11:07:31] [TRACE] - Iniciando o aplicativo[2025-06-12 11:07:31] [INFO] - Carregando lista de ações disponíveis...[2025-06-12 11:08:08] [INFO] - Total carregadas: 62279/62279[2025-06-12 11:12:20] [TRACE] - Iniciando o aplicativo[2025-06-12 11:12:20] [INFO] - Carregando lista de ações disponíveis...[2025-06-12 11:12:28] [INFO] - Total carregadas: 62279[2025-06-12 11:12:50] [TRACE] - Iniciando o aplicativo[2025-06-12 11:12:50] [INFO] - Carregando lista de ações disponíveis...[2025-06-12 11:12:58] [INFO] - Total carregadas: 62279

@@ -1,15 +1,26 @@
 @startuml Architecture
 
-class Pessoa {
+abstract Usuario {
   + nome: str
   + cpf: str
   + data_nascimento: str
   + email: str
-  + senha_login: str
+  + senha: str
   + carteira: Carteira
 }
 
+class UsuarioPadrao {
+  + tipo_conta: str
+  + taxa: float
+}
+
+class UsuarioDemo {
+  + tipo_conta: str
+  + taxa: float
+}
+
 class Carteira {
+  + cpf: str
   + saldo: float 
   + senha_transacao: str
   + lista_de_acoes: List[Acao]
@@ -18,14 +29,18 @@ class Carteira {
 
 class Corretora {
   + acoes_disponiveis: List[Acao]
+  - carregar_acoes_disponiveis(): None
   + fazer_transacao(carteira: Carteira, valor: float): bool 
   + negociar_acao(carteira: Carteira, acao: Acao, quantidade: int): bool
 }
 
 class Boleta {
+  + cpf: str
+  + data: str
   + ticker: str
   + quantidade: int
   + preco_medio: float 
+  + taxas: float
   + tipo: str
 }
 
@@ -56,7 +71,10 @@ class Interface {
 class Frame {
 }
 
-Pessoa *- Carteira
+Usuario *- Carteira
+UsuarioPadrao <|- Usuario 
+UsuarioDemo <|- Usuario
+
 Carteira *-- Boleta
 Carteira o-- Acao
 Corretora o-- Acao
