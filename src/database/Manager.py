@@ -6,13 +6,13 @@ class Manager(ABC):
         pass
 
     @abstractmethod
-    def carregar(self):
+    def listar(self) -> list:
         pass
 
     @abstractmethod
-    def salvar(self):
+    def salvar(self) -> None:
         pass
 
     @abstractmethod
-    def atualizar(self):
+    def carregar(self) -> None:
         pass

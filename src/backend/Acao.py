@@ -40,7 +40,7 @@ class Acao:
     def historico(self) -> pd.DataFrame:
         return self._historico
     
-    def atualizar(self, df: pd.DataFrame) -> bool:
+    def atualizar_valores(self, df: pd.DataFrame) -> bool:
         if df is None or df.empty:
             self._historico = None
             self._preco = 0.0
@@ -50,3 +50,23 @@ class Acao:
             self._historico = df.copy()
             self._preco = self._historico.iloc[-1]['Close']
             return True
+    
+    def to_dict(self) -> dict:
+        return {
+            "pais": self._pais,
+            "ticker": self._ticker,
+            "nome": self._nome,
+            "exchange": self._exchange,
+            "preco": self._preco,
+        }
+    
+    @classmethod
+    def from_dict(cls, dict_data: dict) -> 'Acao':
+        return cls(
+            pais=dict_data['pais'],
+            ticker=dict_data['ticker'],
+            nome=dict_data['nome'],
+            exchange=dict_data['exchange'],
+            preco=dict_data.get('preco', 0.0),
+            historico=None
+        )

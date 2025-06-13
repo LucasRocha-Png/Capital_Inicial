@@ -18,7 +18,7 @@ class Log:
         os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
         with open(LOG_PATH, "a", encoding="utf-8") as file:
             print(log_line)
-            file.write(log_line)
+            file.write(log_line+"\n")
 
     @classmethod
     def info(cls, message: str) -> None:
