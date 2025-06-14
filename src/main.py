@@ -1,12 +1,15 @@
 # Project
+"""
 from backend.Usuarios import * 
 from backend.Corretora import Corretora
 from backend.Log import Log
 from database.ManagerAcao import ManagerAcao
 from database.ManagerUsuarios import ManagerUsuarios
-
+"""
+from frontend.aplicativo import Aplicativo
 
 def main():
+    """
     Log.trace("Inicializando o aplicativo...")
 
     db_usuario = ManagerUsuarios()
@@ -25,6 +28,11 @@ def main():
     db_acoes.atualizar([acao])
     corretora.negociar_acao(usuario, acao, "compra", 10)
     db_usuario.salvar()
+    """
+    
+    app = Aplicativo()
+    app.mainloop()
+
 
 if __name__ == "__main__":
     main()
