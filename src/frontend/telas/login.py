@@ -1,5 +1,4 @@
 import customtkinter as ctk
-from PIL import Image
 from ..tela import Tela
 from typing import Type, TYPE_CHECKING
 if TYPE_CHECKING:
@@ -10,11 +9,8 @@ class TelaLogin(Tela):
         super().__init__(master)
 
         # Decorativos
-        image_background = ctk.CTkImage(light_image=Image.open("data/images/background_login.png"), size=self._aplicativo.tamanho_desktop)
-        tamanho_logo = 300
-        image_logo = ctk.CTkImage(light_image=Image.open("data/images/logo.png"), size=(tamanho_logo, tamanho_logo))
-        label_background = ctk.CTkLabel(self, image=image_background, text="")
-        label_logo = ctk.CTkLabel(self, image=image_logo, text="")
+        label_background = ctk.CTkLabel(self, image=self._aplicativo.imagens["image_background"], text="")
+        label_logo = ctk.CTkLabel(self, image=self._aplicativo.imagens["image_logo"], text="")
         frame_login = ctk.CTkFrame(self, fg_color="#4B0082", corner_radius=6)
         label_usuario = ctk.CTkLabel(frame_login, text="E-mail", anchor="w", text_color="white")
         label_senha = ctk.CTkLabel(frame_login, text="Senha", anchor="w", text_color="white")
@@ -24,12 +20,26 @@ class TelaLogin(Tela):
         altura = 38
         entry_usuario = ctk.CTkEntry(frame_login, placeholder_text="Digite seu e-mail", height=altura)
         entry_senha = ctk.CTkEntry(frame_login, placeholder_text="Digite sua senha", show="*", height=altura)
-        image_mostrar_senha = ctk.CTkImage(light_image=Image.open("data/images/mostrar_senha.png"), size=(24, 24))
-        button_mostrar_senha = ctk.CTkButton(frame_login, text="", image=image_mostrar_senha, command=lambda: entry_senha.configure(show="" if entry_senha.cget("show") else "*"), width=25, height=25, fg_color="white", hover=False, border_width=0, corner_radius=0)
+        button_mostrar_senha = ctk.CTkButton(
+            frame_login,
+            text="",
+            image=self._aplicativo.imagens["image_senha_oculta"],
+            command=lambda: (
+                entry_senha.configure(show="" if entry_senha.cget("show") else "*"),
+                button_mostrar_senha.configure(image=self._aplicativo.imagens["image_senha_oculta"] if entry_senha.cget("show") else self._aplicativo.imagens["image_senha_revelada"])
+            ),
+            width=25,
+            height=25,
+            fg_color="white",
+            hover=False,
+            border_width=0,
+            corner_radius=0
+        )
         button_entrar = ctk.CTkButton(frame_login, text="Entrar", command=self.evento_entrar, height=altura)
-        button_cadastrar = ctk.CTkButton(frame_login, text="Cadastrar", command=self.evento_tela_cadastro, fg_color="white", text_color="#9370DB", height=altura)
+        button_cadastrar = ctk.CTkButton(frame_login, text="Cadastrar-se", command=self.evento_tela_cadastro, fg_color="white", text_color="#9370DB", height=altura)
 
         # Guarda widgets necessários posteriormente
+        self._widgets["entry_usuario"] = entry_usuario
         self._widgets["entry_senha"] = entry_senha
 
         # Layout dos widgets de background

@@ -1,8 +1,9 @@
 import customtkinter as ctk
+from PIL import Image
 
 from .telas.login import TelaLogin
-"""
 from .telas.cadastro import TelaCadastro
+"""
 from .telas.dashboard import TelaDashboard
 from .telas.acoes_disponiveis import TelaAcoesDisponiveis
 from .telas.acoes_possuidas import TelaAcoesPossuidas
@@ -16,7 +17,13 @@ class Aplicativo(ctk.CTk):
         self.__usuario_atual = None
         self.__ultima_tela = None
         self.__tamanho_desktop = (self.winfo_screenwidth(), self.winfo_screenheight())
-
+        self.__imagens = {
+            "image_background": ctk.CTkImage(light_image=Image.open("data/images/background_login.png"), size=self.__tamanho_desktop),
+            "image_logo": ctk.CTkImage(light_image=Image.open("data/images/logo.png"), size=(300, 300)),
+            "image_senha_oculta": ctk.CTkImage(light_image=Image.open("data/images/senha_oculta.png"), size=(24, 24)),
+            "image_senha_revelada": ctk.CTkImage(light_image=Image.open("data/images/senha_revelada.png"), size=(24, 24))
+        }
+        
         # Configurações de tema
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("data/themes/capital_inicial.json")
@@ -29,7 +36,7 @@ class Aplicativo(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.encerrar) # Chama 'encerrar' ao fechar a janela
 
         # Inicializa todas as telas
-        for tela_subclasse in (TelaLogin,):
+        for tela_subclasse in (TelaLogin, TelaCadastro):
             nome = tela_subclasse.__name__
             tela = tela_subclasse(self) # Passa este objeto Aplicativo como "master" da tela
             self.__telas[nome] = tela
@@ -40,6 +47,10 @@ class Aplicativo(ctk.CTk):
     @property
     def tamanho_desktop(self) -> tuple[int, int]:
         return self.__tamanho_desktop
+    
+    @property
+    def imagens(self) -> dict[str, ctk.CTkImage]:
+        return self.__imagens
     
     def redimensionar(self, largura: int, altura: int) -> None:
         if largura <= 0 or altura <= 0:
