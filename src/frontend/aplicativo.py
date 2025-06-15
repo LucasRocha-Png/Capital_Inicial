@@ -1,5 +1,4 @@
 import customtkinter as ctk
-import tkinter.font as tkfont
 
 from .telas.login import TelaLogin
 """
@@ -13,13 +12,13 @@ from .telas.historico import TelaHistorico
 class Aplicativo(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.__frames = {}
+        self.__telas = {}
         self.__usuario_atual = None
-        self.__ultimo_frame = None
+        self.__ultima_tela = None
         self.__tamanho_desktop = (self.winfo_screenwidth(), self.winfo_screenheight())
 
         # Configurações de tema
-        ctk.set_appearance_mode("System")
+        ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("data/themes/capital_inicial.json")
 
         # Configurações da janela principal
@@ -29,14 +28,18 @@ class Aplicativo(ctk.CTk):
         self.columnconfigure(0, weight=1)
         self.protocol("WM_DELETE_WINDOW", self.encerrar) # Chama 'encerrar' ao fechar a janela
 
-        # Inicializa todos os frames
-        for frame_subclasse in (TelaLogin,):
-            nome = frame_subclasse.__name__
-            frame = frame_subclasse(self) # Passa este objeto Aplicativo como "master" do frame
-            self.__frames[nome] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
+        # Inicializa todas as telas
+        for tela_subclasse in (TelaLogin,):
+            nome = tela_subclasse.__name__
+            tela = tela_subclasse(self) # Passa este objeto Aplicativo como "master" da tela
+            self.__telas[nome] = tela
+            tela.grid(row=0, column=0, sticky="nsew")
         
-        self.exibir_frame("TelaLogin")
+        self.exibir_tela("TelaLogin")
+    
+    @property
+    def tamanho_desktop(self) -> tuple[int, int]:
+        return self.__tamanho_desktop
     
     def redimensionar(self, largura: int, altura: int) -> None:
         if largura <= 0 or altura <= 0:
@@ -45,15 +48,15 @@ class Aplicativo(ctk.CTk):
             raise ValueError(f"Largura ou altura excedem o tamanho do desktop. ({self.__tamanho_desktop[0]}x{self.__tamanho_desktop[1]})")
         self.geometry(f"{largura}x{altura}")
 
-    # Coloca o frame especificado em primeiro plano
-    def exibir_frame(self, nome: str) -> None:
-        if nome in self.__frames:
-            frame = self.__frames[nome]
-            self.__ultimo_frame = frame
-            frame.tkraise()
-            frame.evento_exibido()
+    # Coloca a tela especificada em primeiro plano
+    def exibir_tela(self, nome: str) -> None:
+        if nome in self.__telas:
+            tela = self.__telas[nome]
+            self.__ultima_tela = tela
+            tela.lift()
+            tela.evento_exibido()
         else:
-            raise ValueError(f"Frame '{nome}' não existe.")
+            raise ValueError(f"Tela '{nome}' não existe.")
     
     # Chamado sempre ao fechar o aplicativo
     def encerrar(self) -> None:

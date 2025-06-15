@@ -8,13 +8,12 @@
   "CTkFrame": {
     "corner_radius": 6,
     "border_width": 0,
-    "fg_color": ["#F0F0F0", "#4B0082"],
-    "top_fg_color": ["#E6E6FA", "#551A8B"],
+    "fg_color": ["#9370DB", "#8A2BE2"],
     "border_color": ["#9370DB", "#8A2BE2"]
   },
   "CTkButton": {
     "corner_radius": 6,
-    "border_width": 0,
+    "border_width": 2,
     "fg_color": ["#9370DB", "#6A0DAD"],
     "hover_color": ["#8A2BE2", "#4B0082"],
     "border_color": ["#9370DB", "#8A2BE2"],
@@ -137,18 +136,18 @@
   },
   "CTkFont": {
     "macOS": {
-      "family": "Inter-Medium",
-      "size": 13,
+      "family": "Roboto",
+      "size": 18,
       "weight": "normal"
     },
     "Windows": {
-      "family": "Inter-Medium",
-      "size": 13,
+      "family": "Roboto",
+      "size": 18,
       "weight": "normal"
     },
     "Linux": {
-      "family": "Inter-Medium",
-      "size": 13,
+      "family": "Roboto",
+      "size": 18,
       "weight": "normal"
     }
   }
