@@ -40,24 +40,24 @@ class ManagerUsuarios(Manager):
 
         return usuarios
     
-    def carregar(self, cpf: str) -> Usuario | None:
-        Log.info(f"Carregando usuário com CPF: {cpf}")
+    def carregar(self, email: str, senha: str) -> Usuario | None:
+        Log.info(f"Carregando usuário com e-mail: {email}")
         for usuario in self.usuarios:
-            if usuario.cpf == cpf:
+            if usuario.email == email and usuario.senha == senha:
                 Log.info(f"Usuário {usuario.nome} carregado com sucesso.")
                 return usuario
-        Log.error(f"Usuário com CPF {cpf} não encontrado.")
+        Log.error(f"Usuário com e-mail {email} e senha especificada não encontrado.")
         return None
 
-    def adicionar(self, usuario: Usuario):
-        for i, usuario in enumerate(self.usuarios):
-            if usuario.email == usuario.email:
-                self.usuarios[i] = usuario
-                Log.info(f"Usuário {usuario.nome} já existe. Usuário atualizado.")
+    def adicionar(self, novo_usuario: Usuario):
+        for usuario in self.usuarios:
+            if usuario.email == novo_usuario.email:
+                usuario = novo_usuario
+                Log.info(f"Usuário {novo_usuario.nome} já existe. Usuário atualizado.")
                 return 
 
-        self.usuarios.append(usuario)
-        Log.info(f"Usuário {usuario.nome} adicionado com sucesso.")
+        self.usuarios.append(novo_usuario)
+        Log.info(f"Usuário {novo_usuario.nome} adicionado com sucesso.")
     
     def salvar(self):
         Log.info("Salvando usuários...")

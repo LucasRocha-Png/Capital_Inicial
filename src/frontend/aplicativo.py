@@ -1,17 +1,19 @@
 import customtkinter as ctk
 from PIL import Image
 
-from .telas.login import TelaLogin
-from .telas.cadastro import TelaCadastro
-"""
-from .telas.dashboard import TelaDashboard
-from .telas.acoes_disponiveis import TelaAcoesDisponiveis
-from .telas.acoes_possuidas import TelaAcoesPossuidas
-from .telas.historico import TelaHistorico
-"""
+from database.ManagerUsuarios import ManagerUsuarios
+from backend.Log import Log
+from backend.Usuarios import Usuario
+from frontend.telas.login import TelaLogin
+from frontend.telas.cadastro import TelaCadastro
+from frontend.telas.dashboard import TelaDashboard
+
+from typing import Type, TYPE_CHECKING
+if TYPE_CHECKING:
+    from backend.Usuarios import Usuario
 
 class Aplicativo(ctk.CTk):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.__telas = {}
         self.__usuario_atual = None
@@ -23,6 +25,7 @@ class Aplicativo(ctk.CTk):
             "image_senha_oculta": ctk.CTkImage(light_image=Image.open("data/images/senha_oculta.png"), size=(24, 24)),
             "image_senha_revelada": ctk.CTkImage(light_image=Image.open("data/images/senha_revelada.png"), size=(24, 24))
         }
+        self.__manager_usuarios = ManagerUsuarios()
         
         # Configurações de tema
         ctk.set_appearance_mode("light")
@@ -36,7 +39,8 @@ class Aplicativo(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.encerrar) # Chama 'encerrar' ao fechar a janela
 
         # Inicializa todas as telas
-        for tela_subclasse in (TelaLogin, TelaCadastro):
+        Log.trace("Inicializando o aplicativo...")
+        for tela_subclasse in (TelaLogin, TelaCadastro, TelaDashboard):
             nome = tela_subclasse.__name__
             tela = tela_subclasse(self) # Passa este objeto Aplicativo como "master" da tela
             self.__telas[nome] = tela
@@ -52,11 +56,32 @@ class Aplicativo(ctk.CTk):
     def imagens(self) -> dict[str, ctk.CTkImage]:
         return self.__imagens
     
+    @property
+    def manager_usuarios(self) -> Type[ManagerUsuarios]:
+        return self.__manager_usuarios
+    
+    @property
+    def usuario_atual(self) -> Type[Usuario]:
+        return self.__usuario_atual
+    
+    @usuario_atual.setter
+    def usuario_atual(self, usuario: Type[Usuario] | None) -> None:
+        if usuario is None or isinstance(usuario, Usuario):
+            self.__usuario_atual = usuario
+        else:
+            erro = "Usuário inválido. Deve ser uma instância de Usuario ou None."
+            Log.error(erro)
+            raise ValueError(erro)
+
     def redimensionar(self, largura: int, altura: int) -> None:
         if largura <= 0 or altura <= 0:
-            raise ValueError("Largura e altura não positivas.")
+            erro = "Largura e altura devem ser positivas."
+            Log.error(erro)
+            raise ValueError(erro)
         elif largura > self.__tamanho_desktop[0] or altura > self.__tamanho_desktop[1]:
-            raise ValueError(f"Largura ou altura excedem o tamanho do desktop. ({self.__tamanho_desktop[0]}x{self.__tamanho_desktop[1]})")
+            erro = f"Largura ou altura excedem o tamanho do desktop. ({self.__tamanho_desktop[0]}x{self.__tamanho_desktop[1]})"
+            Log.error(erro)
+            raise ValueError(erro)
         self.geometry(f"{largura}x{altura}")
 
     # Coloca a tela especificada em primeiro plano
@@ -67,10 +92,14 @@ class Aplicativo(ctk.CTk):
             tela.lift()
             tela.evento_exibido()
         else:
-            raise ValueError(f"Tela '{nome}' não existe.")
+            erro = f"Tela '{nome}' não existe."
+            Log.error(erro)
+            raise ValueError(erro)
     
     # Chamado sempre ao fechar o aplicativo
     def encerrar(self) -> None:
+        Log.trace("Encerrando o aplicativo...")
         if self.__usuario_atual:
-            print("aplicativo.py — Salvar usuário atual antes de encerrar.")
+            self.__manager_usuarios.adicionar(self.__usuario_atual)
+            self.__manager_usuarios.salvar()
         self.destroy()

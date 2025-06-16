@@ -1,11 +1,12 @@
 import customtkinter as ctk
-from ..tela import Tela
+from backend.Log import Log
+from frontend.tela import Tela
 from typing import Type, TYPE_CHECKING
 if TYPE_CHECKING:
-    from ..aplicativo import Aplicativo
+    from frontend.aplicativo import Aplicativo
 
 class TelaLogin(Tela):
-    def __init__(self, master: Type["Aplicativo"]):
+    def __init__(self, master: Type["Aplicativo"]) -> None:
         super().__init__(master)
 
         # Decorativos
@@ -41,6 +42,7 @@ class TelaLogin(Tela):
         # Guarda widgets necessários posteriormente
         self._widgets["entry_usuario"] = entry_usuario
         self._widgets["entry_senha"] = entry_senha
+        self._widgets["button_entrar"] = button_entrar
 
         # Layout dos widgets de background
         label_background.grid(row=0, column=0, sticky="nsew")
@@ -73,10 +75,34 @@ class TelaLogin(Tela):
         button_cadastrar.grid(row=7, column=0, sticky="ew", padx=margem, pady=(0, margem))
     
     def evento_exibido(self) -> None:
-        print("login.py — Registrar no log que a tela de login foi exibida.")
+        Log.trace("Tela de login exibida.")
+        self._aplicativo.usuario_atual = None
     
     def evento_entrar(self) -> None:
-        print("login.py — Registrar no log que o usuário tentou entrar.")
+        entry_usuario = self._widgets["entry_usuario"]
+        entry_senha = self._widgets["entry_senha"]
+        button_entrar = self._widgets["button_entrar"]
+        Log.info(f"Tentativa de login iniciada. E-mail do usuário: {entry_usuario.get()}")
+
+        # Tenta carregar o usuário da database usando ManagerUsuarios de Aplicativo
+        self._aplicativo.usuario_atual = self._aplicativo.manager_usuarios.carregar(entry_usuario.get(), entry_senha.get())
+        if self._aplicativo.usuario_atual:
+            Log.info(f"Usuário {self._aplicativo.usuario_atual.nome} logado com sucesso.")
+            self._aplicativo.exibir_tela("TelaDashboard")
+        else:
+            Log.error("Falha no login. E-mail ou senha incorretos.")
+            # Dica visual de erro
+            original_entry_border = entry_usuario.cget("border_color")
+            original_button_color = button_entrar.cget("fg_color")
+            entry_usuario.configure(border_color="red")
+            entry_senha.configure(border_color="red")
+            button_entrar.configure(text="E-mail ou senha incorretos", fg_color="red", border_color="red", hover=False, command=None)
+            duracao_flash = 2000
+            self.after(duracao_flash, lambda: (
+                entry_usuario.configure(border_color=original_entry_border),
+                entry_senha.configure(border_color=original_entry_border),
+                button_entrar.configure(text="Entrar", fg_color=original_button_color, border_color=original_button_color, hover=True, command=self.evento_entrar)
+            ))
     
     def evento_tela_cadastro(self) -> None:
         self._aplicativo.exibir_tela("TelaCadastro")
