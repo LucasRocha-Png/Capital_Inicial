@@ -6,7 +6,7 @@ from backend.Log import Log
 from backend.Usuarios import Usuario
 from frontend.telas.login import TelaLogin
 from frontend.telas.cadastro import TelaCadastro
-from frontend.telas.dashboard import TelaDashboard
+from frontend.telas.acoes_disponiveis import TelaAcoesDisponiveis
 
 from typing import Type, TYPE_CHECKING
 if TYPE_CHECKING:
@@ -23,7 +23,8 @@ class Aplicativo(ctk.CTk):
             "image_background": ctk.CTkImage(light_image=Image.open("data/images/background_login.png"), size=self.__tamanho_desktop),
             "image_logo": ctk.CTkImage(light_image=Image.open("data/images/logo.png"), size=(300, 300)),
             "image_senha_oculta": ctk.CTkImage(light_image=Image.open("data/images/senha_oculta.png"), size=(24, 24)),
-            "image_senha_revelada": ctk.CTkImage(light_image=Image.open("data/images/senha_revelada.png"), size=(24, 24))
+            "image_senha_revelada": ctk.CTkImage(light_image=Image.open("data/images/senha_revelada.png"), size=(24, 24)),
+            "image_saldo": ctk.CTkImage(light_image=Image.open("data/images/saldo.png"), size=(70, 70))
         }
         self.__manager_usuarios = ManagerUsuarios()
         
@@ -40,7 +41,7 @@ class Aplicativo(ctk.CTk):
 
         # Inicializa todas as telas
         Log.trace("Inicializando o aplicativo...")
-        for tela_subclasse in (TelaLogin, TelaCadastro, TelaDashboard):
+        for tela_subclasse in (TelaLogin, TelaCadastro, TelaAcoesDisponiveis):
             nome = tela_subclasse.__name__
             tela = tela_subclasse(self) # Passa este objeto Aplicativo como "master" da tela
             self.__telas[nome] = tela

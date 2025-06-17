@@ -1,13 +1,24 @@
-[2025-06-16 14:51:38] [TRACE] - Inicializando ManagerUsuarios...
-[2025-06-16 14:51:38] [INFO] - Carregando usuários disponíveis...
-[2025-06-16 14:51:38] [TRACE] - Inicializando o aplicativo...
-[2025-06-16 14:51:38] [TRACE] - Tela de login exibida.
-[2025-06-16 14:52:19] [INFO] - Tentativa de login iniciada. E-mail do usuário: capitalinicial@gmail.com
-[2025-06-16 14:52:19] [INFO] - Carregando usuário com e-mail: capitalinicial@gmail.com
-[2025-06-16 14:52:19] [INFO] - Usuário Erick Madrona carregado com sucesso.
-[2025-06-16 14:52:19] [INFO] - Usuário Erick Madrona logado com sucesso.
-[2025-06-16 14:52:19] [TRACE] - Dashboard exibido.
-[2025-06-16 14:52:28] [TRACE] - Encerrando o aplicativo...
-[2025-06-16 14:52:28] [INFO] - Usuário Erick Madrona já existe. Usuário atualizado.
-[2025-06-16 14:52:28] [INFO] - Salvando usuários...
-[2025-06-16 14:52:28] [INFO] - Total de usuários salvos: 2
+[2025-06-17 11:09:35] [TRACE] - Inicializando ManagerUsuarios...
+[2025-06-17 11:09:35] [INFO] - Carregando usuários disponíveis...
+[2025-06-17 11:09:35] [TRACE] - Inicializando o aplicativo...
+[2025-06-17 11:09:35] [TRACE] - Tela de login exibida.
+[2025-06-17 11:09:49] [INFO] - Tentativa de login iniciada. E-mail do usuário: capitalinicial@gmail.com
+[2025-06-17 11:09:49] [INFO] - Carregando usuário com e-mail: capitalinicial@gmail.com
+[2025-06-17 11:09:49] [INFO] - Usuário Erick Madrona carregado com sucesso.
+[2025-06-17 11:09:49] [INFO] - Usuário Erick Madrona logado com sucesso.
+[2025-06-17 11:09:49] [TRACE] - Tela de ações disponíveis exibida.
+[2025-06-17 11:09:54] [TRACE] - Saindo da conta...
+[2025-06-17 11:09:54] [TRACE] - Tela de login exibida.
+[2025-06-17 11:09:56] [TRACE] - Tela de cadastro exibida.
+[2025-06-17 11:09:57] [INFO] - Tentativa de cadastro iniciada. Tipo de conta: Padrão; E-mail: ; Nome: ; CPF: ; Data de nascimento: 
+[2025-06-17 11:09:57] [ERROR] - Falha no cadastro. Nome inválido.
+[2025-06-17 11:09:57] [ERROR] - Falha no cadastro. CPF inválido.
+[2025-06-17 11:09:57] [ERROR] - Falha no cadastro. Data de nascimento inválida.
+[2025-06-17 11:09:57] [ERROR] - Falha no cadastro. E-mail inválido.
+[2025-06-17 11:09:57] [ERROR] - Falha no cadastro. Senha muito curta.
+[2025-06-17 11:10:00] [TRACE] - Tela de login exibida.
+[2025-06-17 11:10:03] [INFO] - Tentativa de login iniciada. E-mail do usuário: capitalinicial@gmail.com
+[2025-06-17 11:10:03] [INFO] - Carregando usuário com e-mail: capitalinicial@gmail.com
+[2025-06-17 11:10:03] [ERROR] - Usuário com e-mail capitalinicial@gmail.com e senha especificada não encontrado.
+[2025-06-17 11:10:03] [ERROR] - Falha no login. E-mail ou senha incorretos.
+[2025-06-17 11:10:06] [TRACE] - Encerrando o aplicativo...

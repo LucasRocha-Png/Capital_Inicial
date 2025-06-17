@@ -180,7 +180,7 @@ class TelaCadastro(Tela):
         self._aplicativo.manager_usuarios.adicionar(novo_usuario)
         self._aplicativo.manager_usuarios.salvar()
         self._aplicativo.usuario_atual = novo_usuario
-        self._aplicativo.exibir_tela("TelaDashboard")
+        self._aplicativo.exibir_tela("TelaAcoesDisponiveis")
     
     def evento_tela_login(self) -> None:
         self._aplicativo.exibir_tela("TelaLogin")

@@ -88,7 +88,7 @@ class TelaLogin(Tela):
         self._aplicativo.usuario_atual = self._aplicativo.manager_usuarios.carregar(entry_usuario.get(), entry_senha.get())
         if self._aplicativo.usuario_atual:
             Log.info(f"Usuário {self._aplicativo.usuario_atual.nome} logado com sucesso.")
-            self._aplicativo.exibir_tela("TelaDashboard")
+            self._aplicativo.exibir_tela("TelaAcoesDisponiveis")
         else:
             Log.error("Falha no login. E-mail ou senha incorretos.")
             # Dica visual de erro
