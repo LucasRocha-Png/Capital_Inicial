@@ -10,6 +10,10 @@ class Tela(ctk.CTkFrame, ABC):
         self._aplicativo = master
         self._widgets = {}
     
+    @property
+    def widgets(self) -> dict:
+        return self._widgets
+    
     # Chamado sempre que a tela é exibida
     @abstractmethod
     def evento_exibido(self) -> None:

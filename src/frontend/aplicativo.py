@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from PIL import Image
+import matplotlib.pyplot as plt
 
 from database.ManagerUsuarios import ManagerUsuarios
 from backend.Log import Log
@@ -17,14 +18,13 @@ class Aplicativo(ctk.CTk):
         super().__init__()
         self.__telas = {}
         self.__usuario_atual = None
-        self.__ultima_tela = None
         self.__tamanho_desktop = (self.winfo_screenwidth(), self.winfo_screenheight())
         self.__imagens = {
             "image_background": ctk.CTkImage(light_image=Image.open("data/images/background_login.png"), size=self.__tamanho_desktop),
             "image_logo": ctk.CTkImage(light_image=Image.open("data/images/logo.png"), size=(300, 300)),
             "image_senha_oculta": ctk.CTkImage(light_image=Image.open("data/images/senha_oculta.png"), size=(24, 24)),
             "image_senha_revelada": ctk.CTkImage(light_image=Image.open("data/images/senha_revelada.png"), size=(24, 24)),
-            "image_saldo": ctk.CTkImage(light_image=Image.open("data/images/saldo.png"), size=(70, 70))
+            "image_saldo": ctk.CTkImage(light_image=Image.open("data/images/saldo.png"), size=(60, 60))
         }
         self.__manager_usuarios = ManagerUsuarios()
         
@@ -46,6 +46,7 @@ class Aplicativo(ctk.CTk):
             tela = tela_subclasse(self) # Passa este objeto Aplicativo como "master" da tela
             self.__telas[nome] = tela
             tela.grid(row=0, column=0, sticky="nsew")
+            Log.trace(f"Desenhando tela '{nome}'...")
         
         self.exibir_tela("TelaLogin")
     
@@ -89,7 +90,6 @@ class Aplicativo(ctk.CTk):
     def exibir_tela(self, nome: str) -> None:
         if nome in self.__telas:
             tela = self.__telas[nome]
-            self.__ultima_tela = tela
             tela.lift()
             tela.evento_exibido()
         else:

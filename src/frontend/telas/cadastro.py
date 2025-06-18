@@ -69,9 +69,9 @@ class TelaCadastro(Tela):
         self.columnconfigure(0, weight=1)
         # O tamanho do frame depende do tamanho do desktop
         desktop = self._aplicativo.tamanho_desktop
-        login_padx = int(desktop[0] * 0.38)
-        login_pady = (int(desktop[1] * 0.30), int(desktop[1] * 0.10))
-        frame_cadastro.grid(row=0, column=0, sticky="nsew", padx=login_padx, pady=login_pady)
+        cadastro_padx = int(desktop[0] * 0.38)
+        cadastro_pady = (int(desktop[1] * 0.30), int(desktop[1] * 0.10))
+        frame_cadastro.grid(row=0, column=0, sticky="nsew", padx=cadastro_padx, pady=cadastro_pady)
 
         # Layout dos widgets de cadastro
         frame_cadastro.columnconfigure(0, weight=1)

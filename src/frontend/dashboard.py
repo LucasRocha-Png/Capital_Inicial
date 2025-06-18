@@ -7,8 +7,9 @@ if TYPE_CHECKING:
 class Dashboard(ctk.CTkFrame):
     def __init__(self, master: Type["Tela"]) -> None:
         super().__init__(master)
-        self._aplicativo = master._aplicativo
-        self._widgets = {}
+        Log.trace("Desenhando dashboard...")
+        self.__aplicativo = master._aplicativo
+        self.__widgets = {}
         self.configure(fg_color="#4B0082", corner_radius=12)
 
         # Decorativos
@@ -18,7 +19,7 @@ class Dashboard(ctk.CTkFrame):
         label_nome = ctk.CTkLabel(frame_bem_vindo, text="Usuário", font=fonte_titulo, anchor="w", text_color="#9370DB")
         frame_saldo = ctk.CTkFrame(self, fg_color="transparent")
         label_saldo = ctk.CTkLabel(frame_saldo, text="R$0.00", font=fonte_titulo, anchor="w", text_color="white")
-        label_icone_saldo = ctk.CTkLabel(frame_saldo, image=self._aplicativo.imagens["image_saldo"], text="")
+        label_icone_saldo = ctk.CTkLabel(frame_saldo, image=self.__aplicativo.imagens["image_saldo"], text="")
         frame_espacamento = ctk.CTkLabel(self, fg_color="transparent")
         frame_saida = ctk.CTkFrame(self, fg_color="transparent")
         label_sair = ctk.CTkLabel(frame_saida, text="Já está de saída?", anchor="w", text_color="white")
@@ -28,8 +29,8 @@ class Dashboard(ctk.CTkFrame):
         button_sair = ctk.CTkButton(frame_saida, text="Trocar usuário", command=self.evento_sair, height=altura)
 
         # Guarda widgets necessários posteriormente
-        self._widgets["label_nome"] = label_nome
-        self._widgets["label_saldo"] = label_saldo
+        self.__widgets["label_nome"] = label_nome
+        self.__widgets["label_saldo"] = label_saldo
 
         # Layout dos widgets de saldo
         frame_saldo.rowconfigure(0, weight=1)
@@ -46,7 +47,6 @@ class Dashboard(ctk.CTkFrame):
         frame_bem_vindo.rowconfigure(1, weight=0)
         frame_bem_vindo.columnconfigure(0, weight=1)
         margem = 35
-        espacamento = margem // 3
         label_bem_vindo.grid(row=0, column=0, sticky="ew", padx=margem, pady=(margem, 0))
         label_nome.grid(row=1, column=0, sticky="ew", padx=margem, pady=(0, margem))
 
@@ -68,12 +68,23 @@ class Dashboard(ctk.CTkFrame):
         frame_saida.grid(row=0, column=3, sticky="nsew")
     
     def atualizar(self) -> None:
-        usuario_atual = self._aplicativo.usuario_atual
-        label_nome = self._widgets["label_nome"]
-        label_saldo = self._widgets["label_saldo"]
+        usuario_atual = self.__aplicativo.usuario_atual
+        label_nome = self.__widgets["label_nome"]
+        label_saldo = self.__widgets["label_saldo"]
         label_nome.configure(text=usuario_atual.nome)
         label_saldo.configure(text=f"R${usuario_atual.carteira.saldo:.2f}")
     
+    def evento_mudar_aba(self, aba: str) -> None:
+        nova_tela = ""
+        match aba:
+            case "Ações possuídas":
+                nova_tela = "TelaAcoesPossuidas"
+            case "Histórico de negociações":
+                nova_tela = "TelaHistorico"
+            case _:
+                nova_tela = "TelaAcoesDisponiveis"
+        self.__aplicativo.exibir_tela(nova_tela)
+    
     def evento_sair(self) -> None:
         Log.trace("Saindo da conta...")
-        self._aplicativo.exibir_tela("TelaLogin")
+        self.__aplicativo.exibir_tela("TelaLogin")
