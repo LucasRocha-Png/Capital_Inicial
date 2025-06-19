@@ -2,8 +2,10 @@ import customtkinter as ctk
 from PIL import Image
 
 from database.ManagerUsuarios import ManagerUsuarios
+from database.ManagerAcao import ManagerAcao
 from backend.Log import Log
 from backend.Usuarios import Usuario
+from backend.Corretora import Corretora
 from frontend.telas.login import TelaLogin
 from frontend.telas.cadastro import TelaCadastro
 from frontend.telas.acoes_disponiveis import TelaAcoesDisponiveis
@@ -31,6 +33,8 @@ class Aplicativo(ctk.CTk):
             "image_background_dashboard": ctk.CTkImage(light_image=Image.open("data/images/background_dashboard.png"), size=self.__tamanho_desktop)
         }
         self.__manager_usuarios = ManagerUsuarios()
+        self.__manager_acao = ManagerAcao()
+        self.__corretora = Corretora()
         
         # Configurações de tema
         ctk.set_appearance_mode("light")
@@ -65,6 +69,14 @@ class Aplicativo(ctk.CTk):
     @property
     def manager_usuarios(self) -> Type[ManagerUsuarios]:
         return self.__manager_usuarios
+    
+    @property
+    def manager_acao(self) -> Type[ManagerAcao]:
+        return self.__manager_acao
+    
+    @property
+    def corretora(self) -> Type[Corretora]:
+        return self.__corretora
     
     @property
     def usuario_atual(self) -> Type[Usuario]:

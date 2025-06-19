@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from tkinter import StringVar
 from abc import ABC, abstractmethod
 import mplfinance as mpf
 import pandas as pd
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 class TelaAcoes(Tela, ABC):
     def __init__(self, master: Type["Aplicativo"]) -> None:
         super().__init__(master)
+        self.__transacao_em_andamento = False
 
         # Decorativos
         label_background = ctk.CTkLabel(self, image=self._aplicativo.imagens["image_background_dashboard"], text="")
@@ -42,14 +44,22 @@ class TelaAcoes(Tela, ABC):
         label_icone_detalhes = ctk.CTkLabel(frame_titulo_detalhes, image=self._aplicativo.imagens["image_detalhes"], text="")
         label_nenhuma_acao = ctk.CTkLabel(self, fg_color="#4B0082", corner_radius=6, text="Selecione uma ação para ver seus detalhes.", font=fonte_titulo, text_color="white")
         frame_interacao = ctk.CTkFrame(self, fg_color="#4B0082", corner_radius=6)
+        frame_transacao = ctk.CTkFrame(self, fg_color="#4B0082", corner_radius=0, border_width=2)
+        label_total_titulo = ctk.CTkLabel(frame_transacao, text="Total da transação", anchor="w", font=fonte_detalhes, text_color="white")
+        label_total = ctk.CTkLabel(frame_transacao, text="", anchor="w", font=fonte_detalhes, text_color="#9370DB")
+        label_quantidade = ctk.CTkLabel(frame_transacao, text="Quantidade", anchor="w", text_color="white")
 
         # Interativos
         altura = 38
         lista_acoes = ListaItens(self)
         button_abas = ctk.CTkSegmentedButton(self, values=["Ações do mercado", "Ações possuídas", "Histórico de negociações"], command=self._dashboard.evento_mudar_aba)
-        button_transacao = ctk.CTkButton(frame_interacao, text="", command=self.evento_transacao, fg_color="white", text_color="#9370DB", height=altura) # Texto definido pela subclasse (comprar ou vender ação)
+        button_prompt_transacao = ctk.CTkButton(frame_interacao, text="", command=self.evento_prompt_transacao, fg_color="white", text_color="#9370DB", height=altura) # Texto definido pela subclasse (comprar ou vender ação)
         button_atualizar_selecao = ctk.CTkButton(frame_interacao, text="Atualizar ação selecionada", command=self.evento_atualizar_selecao, height=altura)
         button_atualizar_lista = ctk.CTkButton(frame_interacao, text="Atualizar lista de ações", command=self.evento_atualizar_lista, height=altura)
+        variable_quantidade = StringVar()
+        variable_quantidade.trace_add("write", self.calcular_transacao) # Calcula o total da transação sempre que o usuário digita
+        entry_quantidade = ctk.CTkEntry(frame_transacao, placeholder_text="Digite a quantidade", height=altura, textvariable=variable_quantidade)
+        button_confirmar_transacao = ctk.CTkButton(frame_transacao, text="", command=self.evento_transacao, height=altura)
 
         # Guarda widgets necessários posteriormente
         self._widgets["lista_acoes"] = lista_acoes
@@ -62,8 +72,12 @@ class TelaAcoes(Tela, ABC):
         self._widgets["button_abas"] = button_abas
         self._widgets["label_acoes"] = label_acoes
         self._widgets["label_nenhuma_acao"] = label_nenhuma_acao
-        self._widgets["button_transacao"] = button_transacao
+        self._widgets["button_prompt_transacao"] = button_prompt_transacao
         self._widgets["button_atualizar_selecao"] = button_atualizar_selecao
+        self._widgets["frame_transacao"] = frame_transacao
+        self._widgets["label_total"] = label_total
+        self._widgets["entry_quantidade"] = entry_quantidade
+        self._widgets["button_confirmar_transacao"] = button_confirmar_transacao
 
         # Layout dos frames principais
         self.rowconfigure(0, weight=1)
@@ -94,6 +108,9 @@ class TelaAcoes(Tela, ABC):
         interacao_pady = (int(desktop[1] * (1.02 - porcentagem_margem_geral * 2.40)), int(desktop[1] * porcentagem_margem_geral * 1.62))
         interacao_padx = int(desktop[0] * porcentagem_margem_geral)
         frame_interacao.grid(row=0, column=0, sticky="nsew", padx=interacao_padx, pady=interacao_pady)
+        transacao_pady = (int(desktop[1] * 0.70), int(desktop[1] * 0.08))
+        transacao_padx = (int(desktop[0] * 0.48), int(desktop[0] * 0.40))
+        frame_transacao.grid(row=0, column=0, sticky="nsew", padx=transacao_padx, pady=transacao_pady)
 
         # Layout do frame de interação
         margem = 35
@@ -103,7 +120,7 @@ class TelaAcoes(Tela, ABC):
             peso = 0 if coluna != 1 else 1
             frame_interacao.columnconfigure(coluna, weight=peso)
         button_atualizar_lista.grid(row=0, column=0, sticky="ew", padx=(margem, 0))
-        button_transacao.grid(row=0, column=2, sticky="ew", padx=(0, espacamento))
+        button_prompt_transacao.grid(row=0, column=2, sticky="ew", padx=(0, espacamento))
         button_atualizar_selecao.grid(row=0, column=3, sticky="ew", padx=(espacamento, margem))
 
         # Layout dos títulos dos frames
@@ -141,6 +158,18 @@ class TelaAcoes(Tela, ABC):
         frame_grafico.columnconfigure(0, weight=1)
         frame_grafico.rowconfigure(0, weight=1)
 
+        # Layout do frame de transação
+        frame_transacao.columnconfigure(0, weight=1)
+        for linha in range(5):
+            frame_transacao.rowconfigure(linha, weight=0)
+        margem_transacao = 20
+        espacamento_transacao = margem_transacao // 3
+        label_total_titulo.grid(row=0, column=0, sticky="w", padx=margem_transacao, pady=(margem_transacao, 0))
+        label_total.grid(row=1, column=0, sticky="w", padx=margem_transacao, pady=(0, espacamento_transacao))
+        label_quantidade.grid(row=2, column=0, sticky="w", padx=margem_transacao, pady=(espacamento_transacao, 0))
+        entry_quantidade.grid(row=3, column=0, sticky="ew", padx=margem_transacao, pady=(0, espacamento_transacao))
+        button_confirmar_transacao.grid(row=4, column=0, sticky="ew", padx=margem_transacao, pady=(espacamento_transacao, margem_transacao))
+
     def atualizar_grafico(self, historico: Type[pd.DataFrame]) -> None:
         Log.trace("Redesenhando o gráfico da ação...")
         #historico = historico[30:] # Seleciona dados apenas dos últimos 30 dias
@@ -172,15 +201,56 @@ class TelaAcoes(Tela, ABC):
         self._widgets["label_preco_base"].configure(text=f"R${acao_selecionada.preco:.2f}")
         self.atualizar_grafico(acao_selecionada.historico)
         self._widgets["label_nenhuma_acao"].grid_remove()
-        self._widgets["button_transacao"].grid()
+        self._widgets["button_prompt_transacao"].grid()
         self._widgets["button_atualizar_selecao"].grid()
+        if self.__transacao_em_andamento:
+            self.evento_prompt_transacao()
     
     def limpar(self) -> None:
         Log.trace("Limpando detalhes da ação...")
         self._widgets["label_nenhuma_acao"].grid() # Esconde detalhes da ação por trás de uma label
-        self._widgets["button_transacao"].grid_remove()
+        self._widgets["button_prompt_transacao"].grid_remove()
         self._widgets["button_atualizar_selecao"].grid_remove()
+        self._widgets["frame_transacao"].grid_remove()
+        if self.__transacao_em_andamento:
+            self.evento_prompt_transacao()
     
+    def mensagem_transacao(self, mensagem: str, cor: str, duracao: str = 2000) -> None:
+        button_confirmar_transacao = self._widgets["button_confirmar_transacao"]
+        original_button_color = button_confirmar_transacao.cget("fg_color")
+        original_button_text = button_confirmar_transacao.cget("text")
+        button_confirmar_transacao.configure(text=mensagem, fg_color=cor, border_color=cor, hover=False, command=None)
+        self.after(duracao, lambda: (
+            button_confirmar_transacao.configure(text=original_button_text, fg_color=original_button_color, border_color=original_button_color, hover=True, command=self.evento_transacao)
+        ))
+    
+    def calcular_transacao(self, *args) -> None:
+        entry_quantidade = self._widgets["entry_quantidade"]
+        label_total = self._widgets["label_total"]
+        valor_digitado = entry_quantidade.get()
+        total = 0.00
+        # Calcula o total da transação se o valor digitado for um dígito
+        if valor_digitado.isdigit() and int(valor_digitado) > 0:
+            total = float(valor_digitado) * self._widgets["lista_acoes"].item_selecionado.preco
+            entry_quantidade.configure(border_color="#9370DB")
+        else:
+            Log.warning("Aceitam-se apenas valores inteiros positivos para a quantidade de ações.")
+            entry_quantidade.configure(border_color="red")
+            label_total.configure(text="")
+        label_total.configure(text=f"R${total:.2f}")
+
+    def evento_prompt_transacao(self) -> None:
+        frame_transacao = self._widgets["frame_transacao"]
+        self._widgets["entry_quantidade"].cget("textvariable").set("1")
+        if self.__transacao_em_andamento:
+            Log.trace("Fechando janela de transação...")
+            frame_transacao.grid_remove()
+        else:
+            Log.trace("Abrindo janela de transação...")
+            frame_transacao.grid()
+            self.evento_atualizar_selecao()
+        self.__transacao_em_andamento = not self.__transacao_em_andamento
+
     @abstractmethod
     def evento_transacao(self) -> None:
         pass

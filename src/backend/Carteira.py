@@ -2,6 +2,7 @@
 from backend.Acao import Acao
 from backend.Boleta import Boleta
 from backend.Log import Log
+from typing import Tuple
 
 # Python
 import json
@@ -30,6 +31,10 @@ class Carteira:
     @property
     def boletas(self) -> list[Boleta]:
         return self._boletas
+    
+    @property
+    def acoes(self) -> list[Tuple]:
+        return self._acoes
     
     def from_dict(self, dict_data: str):
         self._saldo = dict_data["saldo"]

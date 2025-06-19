@@ -8,65 +8,49 @@ class TelaAcoesPossuidas(TelaAcoes):
     def __init__(self, master: Type["Aplicativo"]) -> None:
         super().__init__(master)
         self._widgets["label_acoes"].configure(text="Suas ações")
-        self._widgets["button_transacao"].configure(text="Vender ação selecionada")
+        self._widgets["button_prompt_transacao"].configure(text="Vender ação selecionada")
+        self._widgets["button_confirmar_transacao"].configure(text="Confirmar venda")
     
     def evento_exibido(self) -> None:
         Log.trace("Tela de ações possuídas exibida.")
         self._dashboard.atualizar()
         self._widgets["button_abas"].set("Ações possuídas")
-        self.limpar()
-        # ----------------------------------- APENAS PARA TESTE -----------------------------------
-        import pandas as pd
-        from backend.Acao import Acao  # ajuste este import conforme sua estrutura
-
-        # Função interna para criar um DataFrame dummy de 5 dias
-        def make_dummy_historico():
-            dates = pd.date_range(start="2025-01-01", periods=5, freq="D")
-            return pd.DataFrame({
-                "Open":   [100 + i for i in range(5)],
-                "High":   [105 + i for i in range(5)],
-                "Low":    [ 95 + i for i in range(5)],
-                "Close":  [102 + i for i in range(5)],
-                "Volume": [1000 + 10*i for i in range(5)],
-            }, index=dates)
-
-        # Metadados de teste
-        metadados = [
-            ("Brazil", "PETR4",  "Petrobras",          "B3"),
-            ("Brazil", "VALE3",  "Vale",               "B3"),
-            ("USA",    "AAPL",   "Apple Inc.",         "NASDAQ"),
-            ("USA",    "MSFT",   "Microsoft Corp.",    "NASDAQ"),
-            ("Japan",  "7203.T", "Toyota Motor Corp.", "TSE"),
-        ]
-
-        # Cria e popula a lista de Acao
-        acoes_disponiveis = []
-        for pais, ticker, nome, exchange in metadados:
-            historico = make_dummy_historico()
-            preco = float(historico.iloc[-1]["Close"])
-            acoes_disponiveis.append(
-                Acao(
-                    pais=pais,
-                    ticker=ticker,
-                    nome=nome,
-                    exchange=exchange,
-                    preco=preco,
-                    historico=historico
-                )
-            )
-        # ----------------------------------- FIM DO TESTE -----------------------------------
-        self._widgets["lista_acoes"].atualizar(acoes_disponiveis)
+        self.evento_atualizar_lista()
     
     def evento_transacao(self) -> None:
-        Log.trace("Abrindo prompt de venda de ações...")
+        Log.trace("Processando venda de ações...")
+        valor_digitado = self._widgets["entry_quantidade"].get()
+        if valor_digitado.isdigit() and int(valor_digitado) > 0:
+            self._aplicativo.corretora.negociar_acao(
+                self._aplicativo.usuario_atual,
+                self._widgets["lista_acoes"].item_selecionado,
+                "venda",
+                int(valor_digitado)
+            )
+        else:
+            Log.error("Falha em vender ação. A quantidade especificada não é um valor inteiro positivo.")
+            # Dica visual de erro
+            self.mensagem_transacao("Quantidade inválida", "red")
+            return
+        self._dashboard.atualizar()
+        self.evento_atualizar_selecao()
     
     def evento_atualizar_selecao(self) -> None:
         Log.trace("Atualizando a ação do usuário selecionada...")
-        #acao_atualizada =
-        #self._widgets["lista_acoes"].item_selecionado = acao_atualizada
+        lista_acoes = self._widgets["lista_acoes"]
+        acao_atualizada = self._aplicativo.manager_acao.carregar(lista_acoes.item_selecionado.ticker)
+        lista_acoes.item_selecionado = acao_atualizada
     
     def evento_atualizar_lista(self) -> None:
         Log.trace("Atualizando a lista de ações do usuário...")
-        #acoes_possuidas =
-        #self._widgets["lista_acoes"].atualizar(acoes_disponiveis)
+        '''
+        # Carrega ações do usuário e atualiza todas antes de desenhar a lista de ações
+        lista_acoes = self._widgets["lista_acoes"]
+        acoes_possuidas = self._aplicativo.usuario_atual.carteira.acoes
+        if len(acoes_possuidas) > 0:
+            self._aplicativo.manager_acao.atualizar(acoes_possuidas)
+            lista_acoes.atualizar(acoes_possuidas)
+        else:
+            lista_acoes.atualizar(None)
         self.limpar()
+        '''
