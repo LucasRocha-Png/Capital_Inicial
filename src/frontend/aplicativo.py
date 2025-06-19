@@ -1,6 +1,5 @@
 import customtkinter as ctk
 from PIL import Image
-import matplotlib.pyplot as plt
 
 from database.ManagerUsuarios import ManagerUsuarios
 from backend.Log import Log
@@ -8,6 +7,7 @@ from backend.Usuarios import Usuario
 from frontend.telas.login import TelaLogin
 from frontend.telas.cadastro import TelaCadastro
 from frontend.telas.acoes_disponiveis import TelaAcoesDisponiveis
+from frontend.telas.acoes_possuidas import TelaAcoesPossuidas
 
 from typing import Type, TYPE_CHECKING
 if TYPE_CHECKING:
@@ -24,7 +24,11 @@ class Aplicativo(ctk.CTk):
             "image_logo": ctk.CTkImage(light_image=Image.open("data/images/logo.png"), size=(300, 300)),
             "image_senha_oculta": ctk.CTkImage(light_image=Image.open("data/images/senha_oculta.png"), size=(24, 24)),
             "image_senha_revelada": ctk.CTkImage(light_image=Image.open("data/images/senha_revelada.png"), size=(24, 24)),
-            "image_saldo": ctk.CTkImage(light_image=Image.open("data/images/saldo.png"), size=(60, 60))
+            "image_saldo": ctk.CTkImage(light_image=Image.open("data/images/saldo.png"), size=(60, 60)),
+            "image_acoes": ctk.CTkImage(light_image=Image.open("data/images/acoes.png"), size=(60, 60)),
+            "image_detalhes": ctk.CTkImage(light_image=Image.open("data/images/detalhes.png"), size=(60, 60)),
+            "image_historico": ctk.CTkImage(light_image=Image.open("data/images/historico.png"), size=(60, 60)),
+            "image_background_dashboard": ctk.CTkImage(light_image=Image.open("data/images/background_dashboard.png"), size=self.__tamanho_desktop)
         }
         self.__manager_usuarios = ManagerUsuarios()
         
@@ -41,7 +45,7 @@ class Aplicativo(ctk.CTk):
 
         # Inicializa todas as telas
         Log.trace("Inicializando o aplicativo...")
-        for tela_subclasse in (TelaLogin, TelaCadastro, TelaAcoesDisponiveis):
+        for tela_subclasse in (TelaLogin, TelaCadastro, TelaAcoesDisponiveis, TelaAcoesPossuidas):
             nome = tela_subclasse.__name__
             tela = tela_subclasse(self) # Passa este objeto Aplicativo como "master" da tela
             self.__telas[nome] = tela

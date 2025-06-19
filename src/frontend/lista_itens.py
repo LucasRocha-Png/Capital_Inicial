@@ -19,7 +19,22 @@ class ListaItens(ctk.CTkScrollableFrame):
     @property
     def item_selecionado(self) -> Type[Boleta] | Type[Acao] | None:
         return self.__item_selecionado
-
+    
+    @item_selecionado.setter
+    def item_selecionado(self, novo_item: Type[Boleta] | Type[Acao]) -> None:
+        if not (isinstance(novo_item, Boleta) or isinstance(novo_item, Acao)):
+            erro = "O novo item selecionado deve ser um objeto Boleta ou Acao."
+            Log.error(erro)
+            raise ValueError(erro)
+        # Procura o item de mesmo ticker na lista de itens e o atualiza dentro da lista
+        indice = 0
+        for linha, item in enumerate(self.__itens):
+            if item.ticker == novo_item.ticker:
+                indice = linha
+                break
+        self.__itens[indice] = novo_item
+        self.evento_selecionar(indice) # Automaticamente seleciona e atualiza detalhes do item especificado
+    
     def evento_selecionar(self, linha: int) -> None:
         widget_selecionado = self.__widgets[linha]
         self.__item_selecionado = self.__itens[linha]
@@ -30,8 +45,8 @@ class ListaItens(ctk.CTkScrollableFrame):
             if widget != widget_selecionado:
                 widget.configure(fg_color="#9370DB", border_color="#9370DB")
         self.__tela.atualizar_detalhes()
-
-    def atualizar(self, itens: list | None) -> None:
+    
+    def atualizar(self, itens: list[Boleta | Acao] | None) -> None:
         Log.trace("Atualizando lista de itens...")
         self.__itens = itens
         # Deleta toda a lista para redesenhá-la completamente
