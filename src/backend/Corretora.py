@@ -26,46 +26,54 @@ class Corretora:
             Log.info(f"Adicionando o valor de R$ {valor} à carteira do usuário {usuario.nome}.")
         else:
             Log.info(f"Retirando o valor de R$ {valor} da carteira do usuário {usuario.nome}.")
-        Log.info(f"Saldo atual da carteira: R$ {carteira.saldo}")
+
+        Log.info(f"Saldo atual da carteira: R$ {carteira.saldo}.")
 
     def negociar_acao(self, usuario: Usuario, acao: Acao, tipo: str,  quantidade: int) -> None:
+        data_operacao = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         carteira = usuario.carteira
-        
+        preco_medio = acao.preco
+        ticker = acao.ticker
+
         if tipo == "compra":
-            valor_total = acao.preco * quantidade
+            # Checa se o valor da compra é maior que o saldo
+            valor_total = preco_medio * quantidade
             if carteira.saldo < valor_total:
                 Log.error("Saldo insuficiente para compra.")
                 return
-            self.fazer_transacao(usuario, -valor_total)
+            
             boleta = Boleta.criar_boleta(
-                data_operacao=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                ticker=acao.ticker,
+                data_operacao=data_operacao,
+                ticker=ticker,
                 quantidade=quantidade,
-                preco_medio=acao.preco,
+                preco_medio=preco_medio,
                 taxas=0.0,  # Geralmente as taxas sao calculadas na hora da venda
                 tipo="compra"
             )
-            carteira.adicionar_acao(acao, quantidade)
-            Log.info(f"Comprando {quantidade} ações de {acao.ticker} por R$ {acao.preco} cada. Total: {valor_total}")
+
+            self.fazer_transacao(usuario, -valor_total)
+            carteira.adicionar_acao(acao, quantidade, preco_medio)
+            Log.info(f"Comprando {quantidade} ações de {ticker} por R$ {preco_medio} cada. Total: {valor_total}.")
         
         elif tipo == "venda":
-            if quantidade > carteira.quantidade_acao(acao.ticker):
+            # Checa se a quantidade de ações é maior do que a quantidade na carteira
+            if quantidade > carteira.quantidade_acao(acao):
                 Log.error("Quantidade insuficiente de ações para venda.")
                 return
 
-            taxas = acao.preco * quantidade * usuario.taxa_corretagem 
-            valor_total = acao.preco * quantidade - taxas
-
-            self.fazer_transacao(usuario, valor_total)
+            taxas = preco_medio * quantidade * usuario.taxa_corretagem 
+            valor_total = preco_medio * quantidade - taxas
             boleta = Boleta.criar_boleta(
-                data_operacao=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                ticker=acao.ticker,
+                data_operacao=data_operacao,
+                ticker=ticker,
                 quantidade=quantidade,
-                preco_medio=acao.preco,
+                preco_medio=preco_medio,
                 taxas=taxas,
                 tipo="venda"
             )
+
+            self.fazer_transacao(usuario, valor_total)
             carteira.remover_acao(acao, quantidade)
-            Log.info(f"Vendendo {quantidade} ações de {acao.ticker} por R$ {acao.preco} cada. Total: {valor_total}")
+            Log.info(f"Vendendo {quantidade} ações de {ticker} por R$ {preco_medio} cada. Total: {valor_total}.")
         
         carteira.adicionar_boleta(boleta)

@@ -13,19 +13,19 @@ import pandas as pd
 
 TICKER_STORAGE_PATH = "data/acoes"
 TICKERS_LIST_PATH = "data/tickers.csv"
-_MAX_WORKERS = min(32, (os.cpu_count() or 1) * 5)
-
 
 class ManagerAcao(Manager):
     def __init__(self, pais: str = "") -> None:
         super().__init__()
         Log.trace("Inicializando ManagerAcao...")
-        self.acoes = self.__carregar_disponiveis(pais)
+        self._acoes = self.carregar_acoes_disponiveis(pais)
     
+    # Pega o caminho na database da acao
     def __pegar_caminho_acao(self, acao: Acao) -> str:
         return os.path.join(TICKER_STORAGE_PATH, acao.pais, f"{acao.ticker}.csv")
     
-    def __carregar_disponiveis(self, pais: str = "") -> list[Acao]:
+    # Carrega as acoes disponiveis
+    def carregar_acoes_disponiveis(self, pais: str = "") -> list[Acao]:
         Log.info("Carregando ações disponíveis...")
         df = pd.read_csv(TICKERS_LIST_PATH)
         
@@ -37,8 +37,9 @@ class ManagerAcao(Manager):
         Log.info(f"Total carregadas: {len(acoes)}")
         return acoes
 
+    # Carrega uma acao pelo ticker
     def carregar(self, ticker: str) -> Acao | None:
-        for acao in self.acoes:
+        for acao in self._acoes:
             if acao.ticker == ticker:
                 Log.info(f"Ação {acao.ticker} carregada com sucesso.")
                 return acao
@@ -46,6 +47,7 @@ class ManagerAcao(Manager):
         Log.error(f"Ação com ticker {ticker} não encontrada.")
         return None
 
+    # Carrega o historico em uma acao
     def carregar_historico(self, acao: Acao) -> bool:
         try:
             path = self.__pegar_caminho_acao(acao)
@@ -56,7 +58,7 @@ class ManagerAcao(Manager):
         except Exception as e:
             return False
     
-
+    # Salva uma acao
     def salvar(self, acao: Acao) -> bool:
         try:
             path = self.__pegar_caminho_acao(acao)
@@ -67,6 +69,7 @@ class ManagerAcao(Manager):
         except Exception as e:
             return False
         
+    # Atualiza os preços e os historicos de um conjunto de acoes
     def atualizar(self, acoes: list[Acao]) -> bool:
         if len(acoes) == 0:
             Log.info("Nenhuma ação para atualizar.")
@@ -89,6 +92,7 @@ class ManagerAcao(Manager):
         except Exception as e:
             return False
     
+    # Lista todas acoes disponiveis
     def listar(self) -> None:
-        for acao in self.acoes:
+        for acao in self._acoes:
             print(acao)

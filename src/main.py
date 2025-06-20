@@ -16,12 +16,11 @@ def main():
     corretora = Corretora()
     db_acoes = ManagerAcao("Brazil") 
 
-
     usuario = db_usuario.carregar("12345678901") 
     if usuario is None:
         Log.error("Usuário não encontrado. Criando um novo usuário.")
         usuario = UsuarioDemo(nome="Lucas Rocha", cpf="12345678901", data_nascimento="20/03/2004", email="lucas.rocha@ufmg.br", senha="123456")
-        db_usuario.adicionar(usuario)
+        db_usuario.salvar(usuario)
 
     corretora.fazer_transacao(usuario, 1000.0)
     acao = db_acoes.carregar("PETR4.SA")

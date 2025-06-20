@@ -7,18 +7,7 @@ class Boleta:
         self.taxas = taxas
         self.tipo = tipo
 
-    @classmethod
-    def criar_boleta(cls, data_operacao: str, ticker: str, quantidade: int, preco_medio: float, taxas: float, tipo: str) -> 'Boleta':
-        boleta = cls(
-            data_operacao = data_operacao,
-            ticker = ticker,
-            quantidade = quantidade,
-            preco_medio = preco_medio,
-            taxas = taxas,
-            tipo = tipo
-        )
-        return boleta
-
+    # SAVE AND LOAD --------------------------------
     def to_dict(self) -> str:
         return {
             "data_operacao": self.data_operacao,
@@ -40,4 +29,16 @@ class Boleta:
             tipo=dict_data_operacao['tipo']
         )
         return boleta
+    # --------------------------------------------------
     
+    @classmethod
+    def criar_boleta(cls, data_operacao: str, ticker: str, quantidade: int, preco_medio: float, taxas: float, tipo: str) -> 'Boleta':
+        boleta = cls(
+            data_operacao = data_operacao,
+            ticker = ticker,
+            quantidade = quantidade,
+            preco_medio = preco_medio,
+            taxas = taxas,
+            tipo = tipo
+        )
+        return boleta

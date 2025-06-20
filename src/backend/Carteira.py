@@ -13,13 +13,7 @@ class Carteira:
         self._boletas = []
         self._acoes = []
 
-    def to_dict(self) -> str:
-        return {
-            "saldo": self._saldo,
-            "boletas": [boleta.to_dict() for boleta in self._boletas],
-            "acoes": [(acao.to_dict(), quantidade) for acao, quantidade in self._acoes]        
-        }
-
+    # SETTERS AND GETTERS --------------------
     @property
     def saldo(self) -> float:
         return self._saldo
@@ -36,31 +30,46 @@ class Carteira:
     def acoes(self) -> list[Tuple]:
         return self._acoes
     
+    # ----------------------------------------
+
+    # SAVE AND LOAD -------------------------
+    def to_dict(self) -> str:
+        return {
+            "saldo": self._saldo,
+            "boletas": [boleta.to_dict() for boleta in self._boletas],
+            "acoes": [(acao.to_dict(), quantidade, preco_medio) for acao, quantidade, preco_medio in self._acoes]        
+        }
+
     def from_dict(self, dict_data: str):
         self._saldo = dict_data["saldo"]
         self._boletas = [Boleta.from_dict(boleta_dict) for boleta_dict in dict_data["boletas"]]
-        self._acoes = [(Acao.from_dict(acao_dict), quantidade) for acao_dict, quantidade in dict_data["acoes"]]
+        self._acoes = [(Acao.from_dict(acao_dict), quantidade, preco_medio) for acao_dict, quantidade, preco_medio in dict_data["acoes"]]
+    # -------------------------------------------
 
     def adicionar_boleta(self, boleta: Boleta) -> None:
         self._boletas.append(boleta)
-    
-    def adicionar_acao(self, acao: Acao, quantidade: int) -> None:
-        for a, q in self._acoes:
+
+    def adicionar_acao(self, acao: Acao, quantidade: int, preco_medio: float) -> None:
+        for i, (a, q, pm) in enumerate(self._acoes):
             if a.ticker == acao.ticker:
-                q += quantidade
-                Log.info(f"Adicionados {quantidade} de {acao.ticker} à carteira.")
+                q_novo = q + quantidade
+                pm_novo = (q * pm + quantidade * preco_medio) / q_novo
+                self._acoes[i] = (a, q_novo, pm_novo)
                 return
-            
-        self._acoes.append((acao, quantidade))
-        Log.info(f"Adicionados {quantidade} de {acao.ticker} à carteira.")
+
+        self._acoes.append((acao, quantidade, preco_medio))
 
     def remover_acao(self, acao: Acao, quantidade: int) -> None:
-        for a, q in self._acoes:
+        for idx, (a, q, pm) in enumerate(self._acoes):
             if a.ticker == acao.ticker:
-                if (q - quantidade) == 0:
-                    self._acoes.remove((a, q))
+                if q - quantidade <= 0: # Apesar que nunca vai ser ser negativo...
+                    self._acoes.pop(idx)
                 else:
-                    q -= quantidade
-                break
-
-        Log.info(f"Removidos {quantidade} de {acao.ticker} da carteira.")
+                    self._acoes[idx] = (a, q_remanescente, pm)
+                return
+    
+    def quantidade_acao(self, acao: Acao) -> None:
+        for a, q, pm in self._acoes:
+            if a.ticker == acao.ticker:
+                return q
+        return 0

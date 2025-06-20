@@ -10,6 +10,7 @@ import yfinance as yf
 from backend.Log import Log
 
 class Downloader:
+    # Baixa um conjunto de tickers
     @staticmethod
     def download_ticker(tickers: list[str], period: str = "max") -> dict[pd.DataFrame]:
         df = yf.download(tickers, period=period, interval="1d", auto_adjust=True, group_by='ticker')

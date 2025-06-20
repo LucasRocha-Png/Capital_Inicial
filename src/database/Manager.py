@@ -5,6 +5,7 @@ class Manager(ABC):
     def __init__(self) -> None:
         pass
 
+    # SETTERS AND GETTERS -----------------------
     @abstractmethod
     def listar(self) -> list:
         pass
@@ -16,3 +17,4 @@ class Manager(ABC):
     @abstractmethod
     def carregar(self) -> None:
         pass
+    # -------------------------------------------

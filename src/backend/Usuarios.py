@@ -15,6 +15,7 @@ class Usuario(ABC):
         self._senha = senha
         self._carteira: Carteira = Carteira()
 
+    # SETTERS AND GETTERS -----------------------------
     @property
     def nome(self) -> str:
         return self._nome
@@ -42,18 +43,11 @@ class Usuario(ABC):
     @property
     def carteira(self) -> Carteira:
         return self._carteira
+    # ---------------------------------------------------------
 
-    @abstractmethod
-    def __str__(self) -> None:
-        pass
-
+    # SAVE AND LOAD -------------------------------------------
     @abstractmethod
     def to_json(self) -> str:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def from_json(cls, json_data: str) -> 'Usuario':
         pass
 
     @classmethod
@@ -70,6 +64,12 @@ class Usuario(ABC):
             usuario.carteira.from_dict(json_data['carteira'])
         
         return usuario
+    # ----------------------------------------------------------
+
+    @abstractmethod
+    def __str__(self) -> None:
+        pass
+
 
 class UsuarioPadrao(Usuario):
     def __init__(self, nome: str, cpf: str, data_nascimento: str, email: str, senha: str) -> None:
@@ -77,9 +77,7 @@ class UsuarioPadrao(Usuario):
         self._tipo_conta = "padrao"
         self._taxa_corretagem = 0.01
 
-    def __str__(self) -> None:
-        return f"Usuário: {self._nome}, CPF: {self._cpf}, Data de Nascimento: {self._data_nascimento}, Email: {self._email}, Tipo de Conta: {self._tipo_conta}, taxa_corretagem: {self._taxa_corretagem}"
-    
+    # GETTERS AND SETTERS --------------------------
     @property
     def tipo_conta(self) -> str:
         return self._tipo_conta
@@ -87,7 +85,9 @@ class UsuarioPadrao(Usuario):
     @property
     def taxa_corretagem(self) -> float:
         return self._taxa_corretagem
-    
+    # ----------------------------------------------
+
+    # SAVE AND LOAD --------------------------------
     def to_json(self) -> str:
         data = {
             "nome": self._nome,
@@ -107,7 +107,10 @@ class UsuarioPadrao(Usuario):
             pass
 
         return json.dumps(data, ensure_ascii=False)
-
+    # ---------------------------------------------
+    def __str__(self) -> None:
+        return f"Usuário: {self._nome}, CPF: {self._cpf}, Data de Nascimento: {self._data_nascimento}, Email: {self._email}, Tipo de Conta: {self._tipo_conta}, taxa_corretagem: {self._taxa_corretagem}"
+    
 class UsuarioDemo(UsuarioPadrao):
     def __init__(self, nome: str, cpf: str, data_nascimento: str, email: str, senha: str) -> None:
         super().__init__(nome, cpf, data_nascimento, email, senha)

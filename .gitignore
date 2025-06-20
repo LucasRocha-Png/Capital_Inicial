@@ -1,7 +1,5 @@
-/src/__pycache__
-/src/backend/__pycache__
-/src/interface/__pycache__
-/src/database/__pycache__
-/venv/
-/data/usuarios 
-/data/acoes
+src/**/__pycache__/
+venv/
+data/usuarios/
+data/acoes/
+.vscode/
