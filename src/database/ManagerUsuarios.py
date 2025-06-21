@@ -23,16 +23,19 @@ class ManagerUsuarios(Manager):
     def __pegar_caminho_usuario(self, email: str) -> str:
         return os.path.join(USER_STORAGE_PATH, f"{email}.json")
 
+    def __checar_se_existe(self, email: str) -> None:
+        return self.__pegar_caminho_usuario(email) is None 
+
     # Carrega o usuario pelo email
     def carregar(self, email: str) -> Usuario | None:
         Log.info(f"Carregando usuário com o Email: {email}")
 
-        path = self.__pegar_caminho_usuario(email)
-        if not path:
+        if self.__checar_se_existe(email) == False:
             Log.error(f"Usuário com email {email} não encontrado.")
             return None
 
         try:
+            path = self.__pegar_caminho_usuario(email)
             with open(path, 'r') as file:
                 json_data = json.load(file)
                 tipo_conta = json_data.get("tipo_conta")
@@ -53,7 +56,7 @@ class ManagerUsuarios(Manager):
             return None
 
     # Salva o usuario. Leva como argumento um Usuario.
-    def salvar(self, usuario: Usuario):
+    def salvar(self, usuario: Usuario) -> None:
         Log.info(f"Salvando usuário {usuario.nome}...")
         os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 
@@ -62,6 +65,15 @@ class ManagerUsuarios(Manager):
             file.write(usuario.to_json())
 
         Log.info(f"Usuário {usuario.nome} salvo com sucesso.")
+
+    # Adiciona usuario. Se ja existe retorna false, se não, true
+    def adicionar(self, usuario: Usuario) -> None:
+        if self.__checar_se_existe(usuario.email) == True:
+            Log.error(f"Usuário já existe. Não foi possível adicionar")
+            return False
+
+        self.salvar(usuario)
+        return True
 
     # Lista os usuarios salvos
     def listar(self) -> None:
