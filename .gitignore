@@ -3,3 +3,4 @@ venv/
 data/usuarios/
 data/acoes/
 .vscode/
+data/log.txt

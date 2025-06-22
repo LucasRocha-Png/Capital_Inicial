@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-#!/home/erick/Capital_Inicial/venv/bin/python3
-=======
 #!/bin/sh
 '''exec' "/mnt/c/Users/lucas/OneDrive/Área de Trabalho/UFMG/POO/Capital_Inicial/venv/bin/python3" "$0" "$@"
 ' '''
->>>>>>> 779720e (Melhora o backend)
 # -*- coding: utf-8 -*-
 import re
 import sys

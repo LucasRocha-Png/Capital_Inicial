@@ -117,6 +117,5 @@ class Aplicativo(ctk.CTk):
     def encerrar(self) -> None:
         Log.trace("Encerrando o aplicativo...")
         if self.__usuario_atual:
-            self.__manager_usuarios.adicionar(self.__usuario_atual)
-            self.__manager_usuarios.salvar()
+            self.__manager_usuarios.salvar(self.__usuario_atual)
         self.destroy()

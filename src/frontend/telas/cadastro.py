@@ -120,35 +120,52 @@ class TelaCadastro(Tela):
         senha = entry_senha.get()
         duracao_flash = 2000
         erro = False
-        # Validação do nome
-        if ' ' not in nome or any(char.isdigit() for char in nome):
-            Log.error("Falha no cadastro. Nome inválido.")
-            entry_nome.configure(border_color="red")
-            erro = True
-        # Validação do CPF
-        if not re.fullmatch(r"\d{3}\.\d{3}\.\d{3}-\d{2}", cpf):
-            Log.error("Falha no cadastro. CPF inválido.")
-            entry_cpf.configure(border_color="red")
+        mensagem_erro = "Dados inválidos."
+
+        
+        
+        
+        
+        # Validação da senha
+        if len(senha) < 6:
+            mensagem_erro = "Senha muito curta."
+            Log.error(mensagem_erro)
+            entry_senha.configure(border_color="red")
             erro = True
         # Validação da data de nascimento
         if not re.fullmatch(r"(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/\d{4}", data):
-            Log.error("Falha no cadastro. Data de nascimento inválida.")
+            mensagem_erro = "Data de nascimento inválida."
+            Log.error(mensagem_erro)
             entry_data.configure(border_color="red")
             erro = True
         # Validação do e-mail
         if ("@" not in email) or ("." not in email.split("@")[-1]):
-            Log.error("Falha no cadastro. E-mail inválido.")
+            mensagem_erro = " E-mail inválido."
+            Log.error(mensagem_erro)
             entry_email.configure(border_color="red")
             erro = True
-        # Validação da senha
-        if len(senha) < 6:
-            Log.error("Falha no cadastro. Senha muito curta.")
-            entry_senha.configure(border_color="red")
+        # Validação do CPF
+        if not re.fullmatch(r"\d{3}\.\d{3}\.\d{3}-\d{2}", cpf):
+            mensagem_erro = "CPF inválido."
+            Log.error(mensagem_erro)
+            entry_cpf.configure(border_color="red")
             erro = True
-        
+        # Validação do nome
+        if ' ' not in nome or any(char.isdigit() for char in nome):
+            mensagem_erro = "Nome inválido."
+            Log.error(mensagem_erro)
+            entry_nome.configure(border_color="red")
+            erro = True
+        # Checa se o email ja foi usado
+        if (self._aplicativo.manager_usuarios.checar_se_existe(email)):
+            mensagem_erro = "Email já usado."
+            Log.error(mensagem_erro)
+            entry_email.configure(border_color="red")
+            erro = True
+
         if erro:
             original_button_color = button_cadastrar.cget("fg_color")
-            button_cadastrar.configure(text="Dados inseridos inválidos", fg_color="red", border_color="red", hover=False, command=None)
+            button_cadastrar.configure(text=mensagem_erro, fg_color="red", border_color="red", hover=False, command=None)
             self.after(duracao_flash, lambda: (
                 entry_nome.configure(border_color=original_entry_border),
                 entry_cpf.configure(border_color=original_entry_border),
@@ -158,8 +175,7 @@ class TelaCadastro(Tela):
                 button_cadastrar.configure(text="Cadastrar-se", fg_color=original_button_color, border_color=original_button_color, hover=True, command=self.evento_cadastrar)
             ))
             return
-        
-        # Criação e registro do usuário
+
         novo_usuario = None
         if option_tipo_conta.get() == "Demo":
             novo_usuario = UsuarioDemo(
@@ -177,10 +193,11 @@ class TelaCadastro(Tela):
                 email=email,
                 senha=senha
             )
+
         self._aplicativo.manager_usuarios.adicionar(novo_usuario)
-        self._aplicativo.manager_usuarios.salvar()
         self._aplicativo.usuario_atual = novo_usuario
         self._aplicativo.exibir_tela("TelaAcoesDisponiveis")
+        
     
     def evento_tela_login(self) -> None:
         self._aplicativo.exibir_tela("TelaLogin")

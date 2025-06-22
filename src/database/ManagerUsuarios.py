@@ -23,40 +23,48 @@ class ManagerUsuarios(Manager):
     def __pegar_caminho_usuario(self, email: str) -> str:
         return os.path.join(USER_STORAGE_PATH, f"{email}.json")
 
-    def __checar_se_existe(self, email: str) -> None:
-        return self.__pegar_caminho_usuario(email) is None 
+    def checar_se_existe(self, email: str) -> None:
+        path = self.__pegar_caminho_usuario(email)
+        return os.path.isfile(path)
 
-    # Carrega o usuario pelo email
-    def carregar(self, email: str) -> Usuario | None:
+    # Carrega o usuario pelo email e pela senha
+    def carregar(self, email: str, senha: str) -> Usuario | None:
         Log.info(f"Carregando usuário com o Email: {email}")
 
-        if self.__checar_se_existe(email) == False:
+        if self.checar_se_existe(email) == False:
             Log.error(f"Usuário com email {email} não encontrado.")
             return None
 
         try:
             path = self.__pegar_caminho_usuario(email)
-            with open(path, 'r') as file:
-                json_data = json.load(file)
-                tipo_conta = json_data.get("tipo_conta")
-
-                if tipo_conta == "padrao":
-                    usuario = UsuarioPadrao.from_json(json_data)
-                elif tipo_conta == "demo":
-                    usuario = UsuarioDemo.from_json(json_data)
-                else:
-                    Log.error(f"Tipo de conta desconhecido: {tipo_conta}")
-                    return None
-
-                Log.info(f"Usuário {usuario.nome} carregado com sucesso.")
-                return usuario
-
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
         except Exception as e:
-            Log.error(f"Erro ao carregar usuário: {e}")
+            Log.error(f"Erro ao ler dados do usuário {email}: {e}")
             return None
+
+        if data.get("senha") != senha:
+            Log.warning(f"Falha de autenticação para {email}: senha incorreta.")
+            return None
+
+        tipo = data.get("tipo_conta")
+        if tipo == "padrao":
+            usuario = UsuarioPadrao.from_json(data)
+        elif tipo == "demo":
+            usuario = UsuarioDemo.from_json(data)
+        else:
+            Log.error(f"Tipo de conta desconhecido: {tipo_conta}")
+            return None
+
+        Log.info(f"Usuário {usuario.email} carregado com sucesso.")
+        return usuario        
 
     # Salva o usuario. Leva como argumento um Usuario.
     def salvar(self, usuario: Usuario) -> None:
+        if not usuario:
+            Log.warning("Ao salvar o usuario, foi passado um None.")
+            return 
+
         Log.info(f"Salvando usuário {usuario.nome}...")
         os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 
@@ -68,7 +76,7 @@ class ManagerUsuarios(Manager):
 
     # Adiciona usuario. Se ja existe retorna false, se não, true
     def adicionar(self, usuario: Usuario) -> None:
-        if self.__checar_se_existe(usuario.email) == True:
+        if self.checar_se_existe(usuario.email) == True:
             Log.error(f"Usuário já existe. Não foi possível adicionar")
             return False
 
