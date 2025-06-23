@@ -1,5 +1,6 @@
 # Python
 from datetime import datetime
+from typing import Type
 
 # Third Party
 import pandas as pd
@@ -18,7 +19,7 @@ class Corretora:
     def __init__(self) -> None:
         Log.trace("Inicializando Corretora...")
 
-    def fazer_transacao(self, usuario: Usuario, valor: float) -> None:
+    def fazer_transacao(self, usuario: Type[Usuario], valor: Type[float]) -> None:
         carteira = usuario.carteira
         carteira.saldo += valor
 
@@ -29,7 +30,7 @@ class Corretora:
 
         Log.info(f"Saldo atual da carteira: R$ {carteira.saldo}.")
 
-    def negociar_acao(self, usuario: Usuario, acao: Acao, tipo: str,  quantidade: int) -> None:
+    def negociar_acao(self, usuario: Type[Usuario], acao: Type[Acao], tipo: Type[str],  quantidade: Type[int]) -> Type[bool]:
         data_operacao = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         carteira = usuario.carteira
         preco_medio = acao.preco
@@ -40,7 +41,7 @@ class Corretora:
             valor_total = preco_medio * quantidade
             if carteira.saldo < valor_total:
                 Log.error("Saldo insuficiente para compra.")
-                return
+                return False
             
             boleta = Boleta.criar_boleta(
                 data_operacao=data_operacao,
@@ -59,7 +60,7 @@ class Corretora:
             # Checa se a quantidade de ações é maior do que a quantidade na carteira
             if quantidade > carteira.quantidade_acao(acao):
                 Log.error("Quantidade insuficiente de ações para venda.")
-                return
+                return False
 
             taxas = preco_medio * quantidade * usuario.taxa_corretagem 
             valor_total = preco_medio * quantidade - taxas
@@ -77,3 +78,4 @@ class Corretora:
             Log.info(f"Vendendo {quantidade} ações de {ticker} por R$ {preco_medio} cada. Total: {valor_total}.")
         
         carteira.adicionar_boleta(boleta)
+        return True

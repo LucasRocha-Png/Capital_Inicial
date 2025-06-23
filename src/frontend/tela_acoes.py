@@ -170,25 +170,71 @@ class TelaAcoes(Tela, ABC):
         entry_quantidade.grid(row=3, column=0, sticky="ew", padx=margem_transacao, pady=(0, espacamento_transacao))
         button_confirmar_transacao.grid(row=4, column=0, sticky="ew", padx=margem_transacao, pady=(espacamento_transacao, margem_transacao))
 
-    def _atualizar_grafico(self, historico: Type[pd.DataFrame]) -> None:
+    def atualizar_grafico(self, historico: Type[pd.DataFrame] | None) -> None:
         Log.trace("Redesenhando o gráfico da ação...")
-        #historico = historico[30:] # Seleciona dados apenas dos últimos 30 dias
-        # Deleta canvas já existente para criar um novo
-        if "canvas_grafico" in self._widgets:
-            self._widgets["canvas_grafico"].destroy()
-        # Usa a biblioteca mplfinance para plotar o gráfico numa figura
-        figure, _ = mpf.plot(
-            historico,
-            type="candle",
-            style="binance",
-            returnfig=True,
-            figsize=(3,1)
-        )
-        margem = 10
-        canvas_grafico = FigureCanvasTkAgg(figure, master=self._widgets["frame_grafico"])
-        canvas_grafico.get_tk_widget().grid(row=0, column=0, sticky="nsew", padx=margem, pady=margem)
-        canvas_grafico.draw()
-        self._widgets["canvas_grafico"] = canvas_grafico.get_tk_widget()
+        # Caso existe um historico....
+        if historico is not None and not historico.empty:
+            historico_ = historico.tail(60).copy() # Seleciona dados apenas dos últimos 30 dias
+            # Deleta canvas já existente para criar um novo
+            if "canvas_grafico" in self._widgets:
+                self._widgets["canvas_grafico"].destroy()
+        
+            # Definindo cores das barras
+            mc = mpf.make_marketcolors(
+                up   ='#9A6DD7',  # Agora o roxo claro representa alta
+                down ='#4B007A',  # E o roxo escuro representa baixa
+                edge ={'up':'#9A6DD7','down':'#4B007A'},
+                wick ={'up':'#9A6DD7','down':'#4B007A'},
+                volume={'up':'#9A6DD7','down':'#4B007A'}
+            )
+
+
+            # Criando um style com o mc
+            s = mpf.make_mpf_style(
+                base_mpf_style='binance',
+                marketcolors=mc,
+                rc={
+                    'figure.facecolor':'none',
+                    'axes.facecolor':'none',
+                    'axes.edgecolor':'white',
+                    'grid.color':'#8A2BE2'
+                }
+            )
+
+            # 3) E ao plotar, passe style=s:
+            figure, axes = mpf.plot(
+                historico_,
+                type="candle",
+                style=s,
+                returnfig=True,
+                figsize=(6, 4),
+                tight_layout=True
+            )
+
+            ax = axes[0]
+            ax.set_axis_off()
+            ax.grid(False)
+
+            margem = 10
+            canvas_grafico = FigureCanvasTkAgg(figure, master=self._widgets["frame_grafico"])
+            canvas_grafico.get_tk_widget().grid(row=0, column=0, sticky="nsew", padx=margem, pady=margem)
+            canvas_grafico.draw()
+            self._widgets["canvas_grafico"] = canvas_grafico.get_tk_widget()
+            return
+        
+        # Caso o historico nao exista
+        else:
+            Log.warning("Nenhum histórico disponível para plotar")
+            # Deleta canvas já existente para criar um novo
+            if "canvas_grafico" in self._widgets:
+                self._widgets["canvas_grafico"].destroy()
+            
+            # Implementar
+
+            return
+
+
+        
 
     def atualizar_detalhes(self) -> None:
         Log.trace("Atualizando detalhes da ação selecionada...")

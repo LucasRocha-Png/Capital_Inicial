@@ -2,74 +2,73 @@
 from backend.Acao import Acao
 from backend.Boleta import Boleta
 from backend.Log import Log
-from typing import Tuple
 
 # Python
-import json
+from typing import Type, Tuple
 
 class Carteira:
     def __init__(self) -> None:
-        self._saldo = 0
-        self._boletas = []
-        self._acoes = []
+        self.__saldo = 0
+        self.__boletas = []
+        self.__acoes = []
 
     # SETTERS AND GETTERS --------------------
     @property
-    def saldo(self) -> float:
-        return self._saldo
+    def saldo(self) -> Type[float]:
+        return self.__saldo
 
     @saldo.setter
-    def saldo(self, value: float) -> None:
-        self._saldo = value
+    def saldo(self, value: Type[float]) -> None:
+        self.__saldo = value
 
     @property
-    def boletas(self) -> list[Boleta]:
-        return self._boletas
+    def boletas(self) -> Type[list[Boleta]]:
+        return self.__boletas
     
     @property
-    def acoes(self) -> list[Tuple]:
-        return self._acoes
+    def acoes(self) -> Type[list[Tuple]]:
+        return self.__acoes
     
     # ----------------------------------------
 
     # SAVE AND LOAD -------------------------
-    def to_dict(self) -> str:
+    def to_dict(self) -> Type[dict]:
         return {
-            "saldo": self._saldo,
-            "boletas": [boleta.to_dict() for boleta in self._boletas],
-            "acoes": [(acao.to_dict(), quantidade, preco_medio) for acao, quantidade, preco_medio in self._acoes]        
+            "saldo": self.__saldo,
+            "boletas": [boleta.to_dict() for boleta in self.__boletas],
+            "acoes": [(acao.to_dict(), quantidade, preco_medio) for acao, quantidade, preco_medio in self.__acoes]        
         }
 
-    def from_dict(self, dict_data: str):
-        self._saldo = dict_data["saldo"]
-        self._boletas = [Boleta.from_dict(boleta_dict) for boleta_dict in dict_data["boletas"]]
-        self._acoes = [(Acao.from_dict(acao_dict), quantidade, preco_medio) for acao_dict, quantidade, preco_medio in dict_data["acoes"]]
+    def from_dict(self, dict_data: Type[str]) -> 'Carteira':
+        self.__saldo = dict_data["saldo"]
+        self.__boletas = [Boleta.from_dict(boleta_dict) for boleta_dict in dict_data["boletas"]]
+        self.__acoes = [(Acao.from_dict(acao_dict), quantidade, preco_medio) for acao_dict, quantidade, preco_medio in dict_data["acoes"]]
     # -------------------------------------------
 
-    def adicionar_boleta(self, boleta: Boleta) -> None:
-        self._boletas.append(boleta)
+    def adicionar_boleta(self, boleta: Type[Boleta]) -> None:
+        self.__boletas.append(boleta)
 
-    def adicionar_acao(self, acao: Acao, quantidade: int, preco_medio: float) -> None:
-        for i, (a, q, pm) in enumerate(self._acoes):
+    def adicionar_acao(self, acao: Type[Acao], quantidade: Type[int], preco_medio: Type[float]) -> None:
+        for i, (a, q, pm) in enumerate(self.__acoes):
             if a.ticker == acao.ticker:
                 q_novo = q + quantidade
                 pm_novo = (q * pm + quantidade * preco_medio) / q_novo
-                self._acoes[i] = (a, q_novo, pm_novo)
+                self.__acoes[i] = (a, q_novo, pm_novo)
                 return
 
-        self._acoes.append((acao, quantidade, preco_medio))
+        self.__acoes.append((acao, quantidade, preco_medio))
 
-    def remover_acao(self, acao: Acao, quantidade: int) -> None:
-        for idx, (a, q, pm) in enumerate(self._acoes):
+    def remover_acao(self, acao: Type[Acao], quantidade: Type[int]) -> None:
+        for idx, (a, q, pm) in enumerate(self.__acoes):
             if a.ticker == acao.ticker:
                 if q - quantidade <= 0: # Apesar que nunca vai ser ser negativo...
-                    self._acoes.pop(idx)
+                    self.__acoes.pop(idx)
                 else:
-                    self._acoes[idx] = (a, q_remanescente, pm)
+                    self.__acoes[idx] = (a, q - quantidade, pm)
                 return
     
-    def quantidade_acao(self, acao: Acao) -> None:
-        for a, q, pm in self._acoes:
+    def quantidade_acao(self, acao: Type[Acao]) -> int:
+        for a, q, pm in self.__acoes:
             if a.ticker == acao.ticker:
                 return q
         return 0

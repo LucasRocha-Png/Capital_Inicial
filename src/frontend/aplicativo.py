@@ -33,7 +33,7 @@ class Aplicativo(ctk.CTk):
             "image_background_dashboard": ctk.CTkImage(light_image=Image.open("data/images/background_dashboard.png"), size=self.__tamanho_desktop)
         }
         self.__manager_usuarios = ManagerUsuarios()
-        self.__manager_acao = ManagerAcao()
+        self.__manager_acao = ManagerAcao("Brazil")
         self.__corretora = Corretora()
         
         # Configurações de tema

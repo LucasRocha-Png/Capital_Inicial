@@ -7,7 +7,7 @@ class Manager(ABC):
 
     # SETTERS AND GETTERS -----------------------
     @abstractmethod
-    def listar(self) -> list:
+    def listar(self) -> None:
         pass
 
     @abstractmethod

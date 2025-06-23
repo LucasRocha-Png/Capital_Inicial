@@ -38,12 +38,11 @@ class TelaAcoesPossuidas(TelaAcoes):
     def evento_atualizar_selecao(self) -> None:
         Log.trace("Atualizando a ação do usuário selecionada...")
         lista_acoes = self._widgets["lista_acoes"]
-        acao_atualizada = self._aplicativo.manager_acao.carregar(lista_acoes.item_selecionado.ticker)
-        lista_acoes.item_selecionado = acao_atualizada
+        self._aplicativo.manager_acao.atualizar([lista_acoes.item_selecionado])
+        self.limpar()
     
     def evento_atualizar_lista(self) -> None:
         Log.trace("Atualizando a lista de ações do usuário...")
-        '''
         # Carrega ações do usuário e atualiza todas antes de desenhar a lista de ações
         lista_acoes = self._widgets["lista_acoes"]
         acoes_possuidas = self._aplicativo.usuario_atual.carteira.acoes
@@ -53,4 +52,3 @@ class TelaAcoesPossuidas(TelaAcoes):
         else:
             lista_acoes.atualizar(None)
         self._limpar()
-        '''

@@ -1,11 +1,14 @@
 # Third Party
 import pandas as pd
 
+# Python
+from typing import Type
+
 # Project
 from database.Downloader import Downloader
 
 class Acao:
-    def __init__(self, pais: str, ticker: str, nome: str, exchange: str, preco: float = 0, historico: pd.DataFrame = None) -> None:
+    def __init__(self, pais: Type[str], ticker: Type[str], nome: Type[str], exchange: Type[str], preco: Type[float] = 0, historico: Type[pd.DataFrame] = None) -> None:
         self._pais = pais
         self._ticker = ticker
         self._nome = nome
@@ -13,34 +16,34 @@ class Acao:
         self._preco = preco
         self._historico = historico        
     
-    def __str__(self) -> str:
+    def __str__(self) -> Type[str]:
         return f"{self._ticker} ({self._nome}) - {self._pais} ({self._exchange})"
 
     @property
-    def pais(self) -> str:
+    def pais(self) -> Type[str]:
         return self._pais
     
     @property
-    def ticker(self) -> str:
+    def ticker(self) -> Type[str]:
         return self._ticker
     
     @property
-    def nome(self) -> str:
+    def nome(self) -> Type[str]:
         return self._nome
     
     @property
-    def exchange(self) -> str:
+    def exchange(self) -> Type[str]:
         return self._exchange
 
     @property  
-    def preco(self) -> float:
+    def preco(self) -> Type[float]:
         return self._preco
     
     @property
-    def historico(self) -> pd.DataFrame:
+    def historico(self) -> Type[pd.DataFrame]:
         return self._historico
     
-    def atualizar_valores(self, df: pd.DataFrame) -> bool:
+    def atualizar_valores(self, df: Type[pd.DataFrame]) -> Type[bool]:
         if df is None or df.empty:
             self._historico = None
             self._preco = 0.0
@@ -48,10 +51,10 @@ class Acao:
 
         else:
             self._historico = df.copy()
-            self._preco = self._historico.iloc[-1]['Close']
+            self._preco = round(self._historico.iloc[-1]['Close'],2)
             return True
     
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Type[dict]:
         return {
             "pais": self._pais,
             "ticker": self._ticker,
@@ -61,7 +64,7 @@ class Acao:
         }
     
     @classmethod
-    def from_dict(cls, dict_data: dict) -> 'Acao':
+    def from_dict(cls, dict_data: Type[dict]) -> 'Acao':
         return cls(
             pais=dict_data['pais'],
             ticker=dict_data['ticker'],

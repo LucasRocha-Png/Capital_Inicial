@@ -10,6 +10,7 @@ from backend.Acao import Acao
 # Python
 import os
 import json
+from typing import Type
 
 USER_STORAGE_PATH = "data/usuarios"
 
@@ -20,15 +21,15 @@ class ManagerUsuarios(Manager):
         os.makedirs(USER_STORAGE_PATH, exist_ok=True)
 
     # Pega o caminho na database do usuario
-    def __pegar_caminho_usuario(self, email: str) -> str:
+    def __pegar_caminho_usuario(self, email: Type[str]) -> Type[str]:
         return os.path.join(USER_STORAGE_PATH, f"{email}.json")
 
-    def checar_se_existe(self, email: str) -> None:
+    def checar_se_existe(self, email: Type[str]) -> Type[bool]:
         path = self.__pegar_caminho_usuario(email)
         return os.path.isfile(path)
 
     # Carrega o usuario pelo email e pela senha
-    def carregar(self, email: str, senha: str) -> Usuario | None:
+    def carregar(self, email: Type[str], senha: Type[str]) -> Type[Usuario] | None:
         Log.info(f"Carregando usuário com o Email: {email}")
 
         if self.checar_se_existe(email) == False:
@@ -53,14 +54,14 @@ class ManagerUsuarios(Manager):
         elif tipo == "demo":
             usuario = UsuarioDemo.from_json(data)
         else:
-            Log.error(f"Tipo de conta desconhecido: {tipo_conta}")
+            Log.error(f"Tipo de conta desconhecido: {tipo}")
             return None
 
         Log.info(f"Usuário {usuario.email} carregado com sucesso.")
         return usuario        
 
     # Salva o usuario. Leva como argumento um Usuario.
-    def salvar(self, usuario: Usuario) -> None:
+    def salvar(self, usuario: Type[Usuario]) -> None:
         if not usuario:
             Log.warning("Ao salvar o usuario, foi passado um None.")
             return 
@@ -75,7 +76,7 @@ class ManagerUsuarios(Manager):
         Log.info(f"Usuário {usuario.nome} salvo com sucesso.")
 
     # Adiciona usuario. Se ja existe retorna false, se não, true
-    def adicionar(self, usuario: Usuario) -> None:
+    def adicionar(self, usuario: Type[Usuario]) -> Type[bool]:
         if self.checar_se_existe(usuario.email) == True:
             Log.error(f"Usuário já existe. Não foi possível adicionar")
             return False

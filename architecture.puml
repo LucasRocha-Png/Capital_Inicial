@@ -1,136 +1,244 @@
-@startuml
+@startuml architecture
 
-abstract Usuario {
-  + nome: str
-  + cpf: str
-  + data_nascimento: str
-  + email: str
-  + senha: str
-  + carteira: Carteira
+Usuario <|-- UsuarioPadrao
+UsuarioPadrao <|-- UsuarioDemo
+Usuario *-- "'" Carteira
+
+Carteira *-- "many" Boleta
+Carteira o-- "many" Acao
+Corretora --> Usuario
+
+Manager <|-- ManagerAcao
+ManagerAcao --> Downloader
+
+Manager <|-- ManagerUsuarios
+ManagerUsuarios --> Usuario
+
+abstract class Usuario{
+# nome: str
+# cpf: str
+# data_nascimento: str
+# pais: str
+# email: str
+# senha: str
+# carteira: Carteira 
+
++ <getter> nome: str
++ <getter> cpf: str
++ <getter> data_nascimento: str
++ <getter> pais: str
++ <getter> email: str
++ <getter> senha: str
++ <getter> carteira: str
++ abstract to_json(): str
++ from_json(): Usuario
 }
 
-class UsuarioPadrao {
-  + tipo_conta: str
-  + taxa: float
+class UsuarioPadrao{
+# tipo_conta: str
+# taxa_corretagem: float
+
++ <getter> tipo_conta(): str
++ <getter> taxa_corretagem(): str
++ to_json(): str
 }
 
-class UsuarioDemo {
-  + tipo_conta: str
-  + taxa: float
-}
-
-class Carteira {
-  + cpf: str
-  + saldo: float 
-  + senha_transacao: str
-  + lista_de_acoes: List[Acao]
-  + historico_de_negociacoes: List[Boleta] 
-}
-
-class Corretora {
-  + acoes_disponiveis: List[Acao]
-  - carregar_acoes_disponiveis(): None
-  + fazer_transacao(carteira: Carteira, valor: float): bool 
-  + negociar_acao(carteira: Carteira, acao: Acao, quantidade: int): bool
-}
-
-class Boleta {
-  + cpf: str
-  + data: str
-  + ticker: str
-  + quantidade: int
-  + preco_medio: float 
-  + taxas: float
-  + tipo: str
+class UsuarioDemo{
+# tipo_conta: str
+# taxa_corretagem: float
 }
 
 class Acao {
-  + ticker: str
-  + nome_empresa: str
-  + preco_atual: float
-  + historico_precos: DataFrame
-  + atualizar(): bool
+# pais: str
+# ticker: str
+# exchange: str
+# preco: str
+# historico: str
+
++ <getter> pais(): str
++ <getter> ticker(): str
++ <getter> nome(): str
++ <getter> exchange(): str
++ <getter> preco(): str
++ <getter> historico(): DataFrame
++ atualizar_valores(df: Dataframe): bool
++ to_dict(): dict
++ from_dict(dict_data: dict): Acao
+}
+
+class Boleta {
+- data_operacao: str
+- ticker: str
+- quantidade: int
+- preco_medio: float
+- taxas: float
+- tipo: str
+
++ <getter> data_operacao(): str
++ <getter> ticker(): str
++ <getter> quantidade(): int
++ <getter> preco_medio(): float
++ <getter> taxas(): float
++ <getter> tipo(): str
++ criar_boleta(data_operacao: str, ticker: str, quantidade: int, preco_medio: float, taxas: float, tipo: str): Boleta
++ to_dict(): dict
++ from_dict(dict_data: str): Boleta
+}
+
+class Carteira{
+- saldo: float
+- boletas: list[Boleta]
+- acoes: list[tuple[Acao, int, float]]
+
++ <getter> saldo(): float
++ <setter> saldo(value: float): None
++ <getter> boletas(): list[Boleta]
++ <getter> acoes(): list[tuple[Acao, int, float]]
++ from_dict(dict_data: str): Carteira
++ to_dict(): dict
++ adicionar_boleta(boleta: Boleta): None
++ adicionar_acao(acao: Acao, quantidade: int, preco_medio: float): None
++ remover_acao(acao: Acao, quantidade: int): None
++ quantidade_acao(acao: Acao): int
+}
+
+class Corretora{
++ fazer_transacao(usuario: Usuario, valor: float): None
++ negociar_acao(usuario: Usuario, acao: Acao, tipo: str, quantidade: int): None
 }
 
 class Downloader {
-  + download_ticker(ticker: str): DataFrame
-  + atualizar_historico(ticker: str): bool
++ download_ticker(ticker: list[str], period: str): dict[DataFrame]
 }
 
-class Database {
-  + carregar_usuario(cpf: str): Pessoa
-  + salvar_usuario(pessoa: Pessoa): bool
-  + carregar_acao(ticker: str): Acao
-  + salvar_historico(acao: Acao): bool
+abstract class Manager {
++ abstract listar(): None
++ abstract salvar(): None
++ abstract carregar(): None
 }
+
+class ManagerAcao {
+- pegar_caminho_acao(acao: Acao): str
++ carregar_acoes_disponiveis(pais: str): list[Acao]
++ carregar(ticker: str): Acao | None
++ carregar_historico(acao: Acao): bool
++ salvar(acao: Acao): bool
++ atualizar(acoes: list[Acao]): bool
++ listar(): None
+}
+
+
+Aplicativo *-- Tela
+Aplicativo *-- ManagerUsuarios
+Aplicativo *-- ManagerAcao
+Aplicativo *-- Corretora
+Aplicativo o-- Usuario
+Tela <|-- TelaLogin
+Tela <|-- TelaCadastro
+Tela <|-- TelaAcoes
+Tela <|-- TelaHistorico
+TelaAcoes <|-- TelaAcoesDisponiveis
+TelaAcoes <|-- TelaAcoesPossuidas
+TelaAcoes *-- ListaItens
+TelaAcoes *-- Dashboard
+TelaHistorico *-- ListaItens
+TelaHistorico *-- Dashboard
+ListaItens o-- Boleta
+ListaItens o-- Acao
 
 class Aplicativo {
-  - usuario_atual: Usuario
-  - ultimo_frame: Frame
-  - frames: dict[str, Frame]
-  + inicializar(): None
-  + encerrar(): None
-  + exibir_frame(nome: str): None
+ - telas: dict[str, Tela]
+ - usuario_atual: Usuario
+ - tamanho_desktop: tuple[int, int]
+ - imagens: dict[str, CTkImage]
+ - manager_usuarios: ManagerUsuarios
+ - manager_acao: ManagerAcao
+ - corretora: Corretora
+ + <getter> tamanho_desktop(): tuple[int, int]
+ + <getter> imagens(): dict[str, CTkImage]
+ + <getter> manager_usuarios(): ManagerUsuarios
+ + <getter> manager_acao(): ManagerAcao
+ + <getter> corretora(): Corretora
+ + <getter> usuario_atual(): Usuario
+ + <setter> usuario_atual(usuario: Usuario): None
+ + redimensionar(largura: int, altura: int): None
+ + exibir_tela(nome: str): None
+ - encerrar(): None
 }
 
-abstract Frame {
-  + evento_exibido(): None
+abstract class Tela {
+ # aplicativo: Aplicativo
+ # widgets: dict[str]
+ + <getter> widgets(): dict[str]
+ + abstract evento_exibido(): None
 }
 
 class TelaLogin {
-  + evento_login(): None
-  + evento_tela_cadastro(): None
+ + evento_exibido(): None
+ - evento_entrar(): None
+ - evento_tela_cadastro(): None
 }
 
 class TelaCadastro {
-  + evento_cadastro(): None
-  + evento_tela_login(): None
+ + evento_exibido(): None
+ - evento_cadastrar(): None
+ - evento_tela_login(): None
 }
 
-class TelaDashboard {
-  + evento_sair(): None
-  + evento_tela_acoes_disponiveis(): None
-  + evento_tela_acoes_possuidas(): None
-  + evento_tela_historico(): None
+class Dashboard {
+ - aplicativo: Aplicativo
+ - widgets: dict[str]
+ - transacao_em_andamento: bool
+ + atualizar(): None
+ + evento_mudar_aba(aba: str): None
+ - validar_transacao(): None
+ - evento_prompt_transacao(): None
+ - evento_transacao(): None
+ - evento_sair(): None
+}
+
+class ListaItens {
+ - tela: Tela
+ - widgets: dict[str]
+ - itens: list[Boleta | Acao]
+ - item_selecionado: Boleta | Acao
+ + <getter> item_selecionado(): Boleta | Acao
+ + <setter> item_selecionado(novo_item: Boleta | Acao): None
+ + evento_selecionar(linha: int): None
+ + atualizar(itens: list[Boleta | Acao]): None
+}
+
+abstract class TelaAcoes {
+ - transacao_em_andamento: bool
+ # dashboard: Dashboard
+ # atualizar_grafico(historico: DataFrame): None
+ # atualizar_detalhes(): None
+ # limpar(): None
+ # mensagem_transacao(mensagem: str, cor: str, duracao: int): None
+ - calcular_transacao(): None
+ - evento_prompt_transacao(): None
+ + abstract evento_transacao(): None
+ + abstract evento_atualizar_selecao(): None
+ + abstract evento_atualizar_lista(): None
 }
 
 class TelaAcoesDisponiveis {
-  + evento_voltar(): None
-  + evento_selecionar_acao(): None
+ + evento_exibido(): None
+ + evento_transacao(): None
+ + evento_atualizar_selecao(): None
+ + evento_atualizar_lista(): None
 }
 
 class TelaAcoesPossuidas {
-  + evento_voltar(): None
-  + evento_selecionar_acao(): None
+ + evento_exibido(): None
+ + evento_transacao(): None
+ + evento_atualizar_selecao(): None
+ + evento_atualizar_lista(): None
 }
 
 class TelaHistorico {
-  + evento_voltar(): None
+ - dashboard: Dashboard
+ + evento_exibido(): None
 }
-
-class TelaAcao {
-  + evento_voltar(): None
-  + evento_atualizar(): None
-}
-
-Usuario *- Carteira
-UsuarioPadrao <|- Usuario 
-UsuarioDemo <|- Usuario
-
-Carteira *-- Boleta
-Carteira o-- Acao
-Corretora o-- Acao
-Corretora ..> Carteira
-Downloader ..> Acao
-Database ..> Pessoa
-Database ..> Acao
-Aplicativo *-- Frame
-
-Frame <|- TelaLogin
-Frame <|- TelaCadastro
-Frame <|- TelaDashboard
-Frame <|- TelaAcoesDisponiveis
-Frame <|- TelaAcoesPossuidas
-Frame <|- TelaHistorico
 
 @enduml
