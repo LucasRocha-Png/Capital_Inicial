@@ -13,11 +13,10 @@ class TelaAcoesDisponiveis(TelaAcoes):
     
     def evento_exibido(self) -> None:
         Log.trace("Tela de ações disponíveis exibida.")
-        self._dashboard.atualizar()
         self._widgets["button_abas"].set("Ações do mercado")
-        self.limpar()
         acoes_disponiveis = self._aplicativo.manager_acao.acoes
         self._widgets["lista_acoes"].atualizar(acoes_disponiveis)
+        self._dashboard.atualizar()
     
     def evento_transacao(self) -> None:
         Log.trace("Processando compra de ações...")
@@ -47,14 +46,12 @@ class TelaAcoesDisponiveis(TelaAcoes):
         Log.trace("Atualizando a ação do mercado selecionada...")
         lista_acoes = self._widgets["lista_acoes"]
         self._aplicativo.manager_acao.atualizar([lista_acoes.item_selecionado])
-        self.limpar()
-        #acao_atualizada =
-        #self._widgets["lista_acoes"].item_selecionado = acao_atualizada
+        self._dashboard.atualizar()
+        self._limpar()
     
     def evento_atualizar_lista(self) -> None:
         Log.trace("Atualizando a lista de ações do mercado...")
         lista_acoes = self._aplicativo.manager_acao.acoes
         self._aplicativo.manager_acao.atualizar(lista_acoes)
-        #acoes_disponiveis =
-        #self._widgets["lista_acoes"].atualizar(acoes_disponiveis)
+        self._dashboard.atualizar()
         self._limpar()

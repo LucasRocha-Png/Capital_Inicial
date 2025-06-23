@@ -245,7 +245,7 @@ class TelaAcoes(Tela, ABC):
         self._widgets["label_nome_base"].configure(text=acao_selecionada.nome)
         self._widgets["label_exchange_base"].configure(text=acao_selecionada.exchange)
         self._widgets["label_preco_base"].configure(text=f"R${acao_selecionada.preco:.2f}")
-        self._atualizar_grafico(acao_selecionada.historico)
+        self.atualizar_grafico(acao_selecionada.historico)
         self._widgets["label_nenhuma_acao"].grid_remove()
         self._widgets["button_prompt_transacao"].grid()
         self._widgets["button_atualizar_selecao"].grid()

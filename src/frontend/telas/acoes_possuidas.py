@@ -39,16 +39,15 @@ class TelaAcoesPossuidas(TelaAcoes):
         Log.trace("Atualizando a ação do usuário selecionada...")
         lista_acoes = self._widgets["lista_acoes"]
         self._aplicativo.manager_acao.atualizar([lista_acoes.item_selecionado])
-        self.limpar()
+        self._dashboard.atualizar()
+        self._limpar()
     
     def evento_atualizar_lista(self) -> None:
         Log.trace("Atualizando a lista de ações do usuário...")
         # Carrega ações do usuário e atualiza todas antes de desenhar a lista de ações
         lista_acoes = self._widgets["lista_acoes"]
-        acoes_possuidas = self._aplicativo.usuario_atual.carteira.acoes
-        if len(acoes_possuidas) > 0:
-            self._aplicativo.manager_acao.atualizar(acoes_possuidas)
-            lista_acoes.atualizar(acoes_possuidas)
-        else:
-            lista_acoes.atualizar(None)
+        acoes_possuidas = [acao for acao, quantidade, preco_medio in self._aplicativo.usuario_atual.carteira.acoes]
+        self._aplicativo.manager_acao.atualizar(acoes_possuidas)
+        lista_acoes.atualizar(acoes_possuidas)
+        self._dashboard.atualizar()
         self._limpar()
