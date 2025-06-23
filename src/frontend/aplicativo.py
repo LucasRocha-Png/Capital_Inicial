@@ -45,7 +45,7 @@ class Aplicativo(ctk.CTk):
         self.redimensionar(*self.__tamanho_desktop)
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        self.protocol("WM_DELETE_WINDOW", self.encerrar) # Chama 'encerrar' ao fechar a janela
+        self.protocol("WM_DELETE_WINDOW", self.__encerrar) # Chama 'encerrar' ao fechar a janela
 
         # Inicializa todas as telas
         Log.trace("Inicializando o aplicativo...")
@@ -114,7 +114,7 @@ class Aplicativo(ctk.CTk):
             raise ValueError(erro)
     
     # Chamado sempre ao fechar o aplicativo
-    def encerrar(self) -> None:
+    def __encerrar(self) -> None:
         Log.trace("Encerrando o aplicativo...")
         if self.__usuario_atual:
             self.__manager_usuarios.salvar(self.__usuario_atual)

@@ -32,13 +32,13 @@ class Dashboard(ctk.CTkFrame):
 
         # Interativos
         altura = 38
-        button_adicionar_saldo = ctk.CTkButton(frame_adicionar_saldo, text="Adicionar saldo", command=self.evento_prompt_transacao, fg_color="white", text_color="#9370DB", height=altura)
-        button_sair = ctk.CTkButton(frame_saida, text="Trocar usuário", command=self.evento_sair, height=altura)
+        button_adicionar_saldo = ctk.CTkButton(frame_adicionar_saldo, text="Adicionar saldo", command=self.__evento_prompt_transacao, fg_color="white", text_color="#9370DB", height=altura)
+        button_sair = ctk.CTkButton(frame_saida, text="Trocar usuário", command=self.__evento_sair, height=altura)
         variable_quantia = StringVar()
-        variable_quantia.trace_add("write", self.validar_transacao) # Rastreia o valor de quantia digitado para validá-lo
+        variable_quantia.trace_add("write", self.__validar_transacao) # Rastreia o valor de quantia digitado para validá-lo
         altura_transacao = 28
         entry_quantia = ctk.CTkEntry(frame_transacao, placeholder_text="Digite a quantia", height=altura_transacao, textvariable=variable_quantia)
-        button_confirmar_transacao = ctk.CTkButton(frame_transacao, text="Confirmar transação", command=self.evento_transacao, height=altura_transacao)
+        button_confirmar_transacao = ctk.CTkButton(frame_transacao, text="Confirmar transação", command=self.__evento_transacao, height=altura_transacao)
 
         # Guarda widgets necessários posteriormente
         self.__widgets["label_nome"] = label_nome
@@ -111,9 +111,9 @@ class Dashboard(ctk.CTkFrame):
         label_nome.configure(text=usuario_atual.nome)
         label_saldo.configure(text=f"R${usuario_atual.carteira.saldo:.2f}")
         if self.__transacao_em_andamento:
-            self.evento_prompt_transacao()
+            self.__evento_prompt_transacao()
 
-    def validar_transacao(self, *args) -> None:
+    def __validar_transacao(self, *args) -> None:
         entry_quantia = self.__widgets["entry_quantia"]
         valor_digitado = entry_quantia.get()
         # Valida se o valor digitado é um float
@@ -128,7 +128,7 @@ class Dashboard(ctk.CTkFrame):
             Log.warning("Aceitam-se apenas valores float positivos para a quantia de saldo a ser adicionada.")
             entry_quantia.configure(border_color="red")
 
-    def evento_prompt_transacao(self) -> None:
+    def __evento_prompt_transacao(self) -> None:
         frame_transacao = self.__widgets["frame_transacao"]
         self.__widgets["entry_quantia"].cget("textvariable").set("1.00")
         if self.__transacao_em_andamento:
@@ -140,7 +140,7 @@ class Dashboard(ctk.CTkFrame):
             self.atualizar()
         self.__transacao_em_andamento = not self.__transacao_em_andamento
     
-    def evento_transacao(self) -> None:
+    def __evento_transacao(self) -> None:
         Log.trace("Processando adição de saldo...")
         valor_digitado = self.__widgets["entry_quantia"].get()
         valor_float = True
@@ -158,7 +158,7 @@ class Dashboard(ctk.CTkFrame):
             button_confirmar_transacao.configure(text="Quantia inválida", fg_color="red", border_color="red", hover=False, command=None)
             duracao_flash = 2000
             self.after(duracao_flash, lambda: (
-                button_confirmar_transacao.configure(text="Confirmar transação", fg_color=original_button_color, border_color=original_button_color, hover=True, command=self.evento_transacao)
+                button_confirmar_transacao.configure(text="Confirmar transação", fg_color=original_button_color, border_color=original_button_color, hover=True, command=self.__evento_transacao)
             ))
             return
         self.atualizar()
@@ -174,6 +174,6 @@ class Dashboard(ctk.CTkFrame):
                 nova_tela = "TelaAcoesDisponiveis"
         self.__aplicativo.exibir_tela(nova_tela)
     
-    def evento_sair(self) -> None:
+    def __evento_sair(self) -> None:
         Log.trace("Saindo da conta...")
         self.__aplicativo.exibir_tela("TelaLogin")

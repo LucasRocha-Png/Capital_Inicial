@@ -15,7 +15,7 @@ class TelaAcoesDisponiveis(TelaAcoes):
         Log.trace("Tela de ações disponíveis exibida.")
         self._dashboard.atualizar()
         self._widgets["button_abas"].set("Ações do mercado")
-        self.limpar()
+        self._limpar()
         # ----------------------------------- APENAS PARA TESTE -----------------------------------
         import pandas as pd
         from backend.Acao import Acao  # ajuste este import conforme sua estrutura
@@ -74,10 +74,10 @@ class TelaAcoesDisponiveis(TelaAcoes):
                 )
             else:
                 Log.error(f"Falha em comprar ação. Usuário {usuario_atual.nome} tem saldo de R${usuario_atual.carteira.saldo:.2f}. A quantia necessária é R${preco_total:.2f}.")
-                self.mensagem_transacao("Saldo insuficiente", "red")
+                self._mensagem_transacao("Saldo insuficiente", "red")
         else:
             Log.error("Falha em comprar ação. A quantidade especificada não é um valor inteiro positivo.")
-            self.mensagem_transacao("Quantidade inválida", "red")
+            self._mensagem_transacao("Quantidade inválida", "red")
             return
         self._dashboard.atualizar()
         self.evento_atualizar_selecao()
@@ -91,4 +91,4 @@ class TelaAcoesDisponiveis(TelaAcoes):
         Log.trace("Atualizando a lista de ações do mercado...")
         #acoes_disponiveis =
         #self._widgets["lista_acoes"].atualizar(acoes_disponiveis)
-        self.limpar()
+        self._limpar()

@@ -30,7 +30,7 @@ class TelaAcoesPossuidas(TelaAcoes):
         else:
             Log.error("Falha em vender ação. A quantidade especificada não é um valor inteiro positivo.")
             # Dica visual de erro
-            self.mensagem_transacao("Quantidade inválida", "red")
+            self._mensagem_transacao("Quantidade inválida", "red")
             return
         self._dashboard.atualizar()
         self.evento_atualizar_selecao()
@@ -52,5 +52,5 @@ class TelaAcoesPossuidas(TelaAcoes):
             lista_acoes.atualizar(acoes_possuidas)
         else:
             lista_acoes.atualizar(None)
-        self.limpar()
+        self._limpar()
         '''

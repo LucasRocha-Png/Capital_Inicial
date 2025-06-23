@@ -36,8 +36,8 @@ class TelaLogin(Tela):
             border_width=0,
             corner_radius=0
         )
-        button_entrar = ctk.CTkButton(frame_login, text="Entrar", command=self.evento_entrar, height=altura)
-        button_cadastrar = ctk.CTkButton(frame_login, text="Cadastrar-se", command=self.evento_tela_cadastro, fg_color="white", text_color="#9370DB", height=altura)
+        button_entrar = ctk.CTkButton(frame_login, text="Entrar", command=self.__evento_entrar, height=altura)
+        button_cadastrar = ctk.CTkButton(frame_login, text="Cadastrar-se", command=self.__evento_tela_cadastro, fg_color="white", text_color="#9370DB", height=altura)
 
         # Guarda widgets necessários posteriormente
         self._widgets["entry_usuario"] = entry_usuario
@@ -78,7 +78,7 @@ class TelaLogin(Tela):
         Log.trace("Tela de login exibida.")
         self._aplicativo.usuario_atual = None
     
-    def evento_entrar(self) -> None:
+    def __evento_entrar(self) -> None:
         entry_usuario = self._widgets["entry_usuario"]
         entry_senha = self._widgets["entry_senha"]
         button_entrar = self._widgets["button_entrar"]
@@ -101,8 +101,8 @@ class TelaLogin(Tela):
             self.after(duracao_flash, lambda: (
                 entry_usuario.configure(border_color=original_entry_border),
                 entry_senha.configure(border_color=original_entry_border),
-                button_entrar.configure(text="Entrar", fg_color=original_button_color, border_color=original_button_color, hover=True, command=self.evento_entrar)
+                button_entrar.configure(text="Entrar", fg_color=original_button_color, border_color=original_button_color, hover=True, command=self.__evento_entrar)
             ))
     
-    def evento_tela_cadastro(self) -> None:
+    def __evento_tela_cadastro(self) -> None:
         self._aplicativo.exibir_tela("TelaCadastro")
